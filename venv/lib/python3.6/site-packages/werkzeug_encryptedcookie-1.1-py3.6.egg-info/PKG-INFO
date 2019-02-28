@@ -1,0 +1,15 @@
+Metadata-Version: 1.1
+Name: werkzeug-encryptedcookie
+Version: 1.1
+Summary: Werkzeug encrypted cookie
+Home-page: https://github.com/homm/werkzeug-encryptedcookie
+Author: Alexander Karpinsky
+Author-email: homm86@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: any
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

@@ -1,0 +1,24 @@
+Metadata-Version: 1.1
+Name: werkzeug-rfc7xx
+Version: 1.0.0
+Summary: Abort codes and exceptions for werkzeug according to RFC 7xx
+Home-page: https://github.com/onjin/werkzeug-rfc7xx
+Author: Marek Wywiał
+Author-email: onjinx@gmail.com
+License: MIT
+Description: 
+        Werkzeug RFC 7xx
+        ----------------
+        
+        Additional abort() codes and exceptions for werkzeug according to RFC 7xx
+        
+Platform: UNKNOWN
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

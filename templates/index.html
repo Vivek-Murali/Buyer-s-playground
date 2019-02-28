@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% block head %}
+      <title>{% block title %}{% endblock %}Buyer's Plyground</title>
+    {% endblock %}
+
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Cardo" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+<body style="background-image: url({{ url_for('static', filename='img/1.jpg') }});background-size: cover; background-repeat: no-repeat;background-position:center center;background-attachment:fixed;">
+<div style="position:absolute; max-width:100%; max-height:500%; margin: 0 auto; top: 25%; left: 15%;">
+    <div class="content" style="position:relative; bottom: 0; background: rgb(0, 0, 0); background: rgba(0, 0, 0, 0.5); color: #f1f1f1; width: 80%; height:100%; padding: 20px;">
+    <h2 style="text-align:center;">"The farmer is the only person in our economy who buys everything at retail, sells everything in wholesale and pays the freight both ways"</h2>
+    <h4 style="text-align:center; font-weight:bold;">Let's bring a change in the process</h4>
+        <a href="/index_template" style="text-align:center; color:Black; text-decoration:none;"><h4 style="text-align:center; font-weight:bold;">Proceed to Home Page <span style="font-size:20pt;">&#8594;</span></h4></a>
+    <br>
+        <h5 style="text-align:center; font-weight:bold;"><a href="/login">Login In</a> &nbsp;&nbsp;&nbsp; <a href="/register">Sign Up</a></h5>
+  </div>
+</div>
+</body>
+</html>

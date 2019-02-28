@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>{{ username }}'s Assets</h2>&nbsp;
+    <br>
+        <br>
+    <hr style="type:bold">
+    {% if assets|length > 0 %}
+    {% for asset in Assets %}
+        <h3 style="color:#800020;"><a href="{{ url_for('file',filename=asset.filename) }} " style="color:#800020;">{{ asset.filename }}</a></h3>
+        <p>{{ asset.description }}</p>
+        <hr>
+    {% endfor %}
+      {% else %}
+        <h4>There aren't any files! </h4>
+    {% endif %}
+</div>
+{% endblock %}

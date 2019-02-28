@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>{{ username }}'s Assets</h2>&nbsp;
+    <br>
+        <br>
+
+     <form  id="new-blog" action="/assets_template" method="post" enctype="multipart/form-data">
+        <div class="form-group row">
+        <div class="col-xs-4">
+         <div class="form-group">
+            <label for="file">File Upload</label>
+            <input type="file" id="file" class="form-control" name="file">
+        </div>
+        </div>
+         <div class="col-xs-4">
+        <div  class="form-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" class="form-control" name="description">
+        </div>
+         </div>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+<br>
+    <br>
+    <hr style="type:bold">
+    {% if posts|length > 0 %}
+    {{len1}}
+    {% for post in posts %}
+        <h4 style="color:#800020;"><a href="{{ url_for('file',filename=post['filename']) }} " style="color:#800020;" target="blank">{{ post["filename"] }}</a></h4>
+        <p>{{ post["description"] }}</p>
+        <hr>
+    {% endfor %}
+      {% else %}
+        <h4>There aren't any files! </h4>
+    {% endif %}
+</div>
+{% endblock %}
