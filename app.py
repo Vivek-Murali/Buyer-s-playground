@@ -12,7 +12,8 @@ from flask_pymongo import PyMongo
 from models.blockchain import Blockchain
 from models.ass_blockchain import AssetsBlockchain
 from uuid import uuid4
-import pandas as pd
+from models.announcement import Anno
+
 
 app = Flask(__name__)  # '__main__'
 app.secret_key = "Hero"
@@ -102,6 +103,33 @@ def file(filename):
     return mongo.send_file(filename)
 
 
+@app.route('/anno')
+def anno():
+    return render_template('anno.html')
+
+
+@app.route('/view_user_all/<string:username>')
+def user_post(username):
+    topic = User.get_by_username(username)
+    posts = Anno.from_all_topic()
+    return render_template('anno.html', posts=posts,
+                           username=session['username'])
+
+
+@app.route('/new_post/<string:username>', methods=['POST', 'GET'])
+def new_post(username):
+    if request.method == 'GET':
+        return render_template('new_post.html', username=username)
+    else:
+        message = request.form['content']
+        user = User.get_by_username(session['username'])
+        likes = "0"
+        new_post = Anno(message, user.username, user.picture_name, likes)
+        new_post.save_to_mongo()
+        username = session['username']
+        return make_response(user_post(username))
+
+
 @app.route('/auction')
 def auction_template():
     render_template('auction.html', username=session['username'])
@@ -138,6 +166,7 @@ def create_new_asset():
         required = ['username', 'user_id','filename','description']
         if not all(k in values for k in required):
             return 'Missing values', 400
+        Database.insert('Assets', values)
         # Create a new Transaction
         index = ablockchain.new_transaction_asset(values['username'], values['user_id'],values['filename'],values['description'])
         response = {'message': f'Transaction will be added to Block {index}'}
@@ -159,7 +188,6 @@ def create_new_asset():
             'previous_hash': block['previous_hash'],
         }
         Database.insert('Assets_block', response)
-        Database.insert('Assets',values)
         mongo.save_file(file1.filename, file1)
         flash("Posted Successfully", category='success')
         return make_response(assets(user.username))

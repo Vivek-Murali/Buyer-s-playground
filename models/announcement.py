@@ -2,15 +2,15 @@ import datetime
 import uuid
 from flask import session
 from common.database import Database
-from flask_pymongo import PyMongo, pymongo
+import pymongo
 
 
-class Post(object):
-    def __init__(self, message, topic_id,username, picture,date_posted = datetime.datetime.now(), _id=None):
+class Anno(object):
+    def __init__(self, message,username,picture,likes,date_posted = datetime.datetime.now(), _id=None):
         self.message = message
-        self.topic_id = topic_id
         self.username = username
         self.picture = picture
+        self.likes = likes
         self.date_posted = date_posted
         self._id = uuid.uuid4().hex  if _id is None else _id
 
@@ -53,20 +53,17 @@ class Post(object):
     def from_user_topic(username):
         return [post for post in Database.find(collection='post', query={'username':username}).sort('date_posted', pymongo.DESCENDING)]
 
-    @staticmethod
-    def from_topic(_id):
-        return [post for post in Database.find(collection='post', query={'topic_id': _id}).sort('date_posted', pymongo.DESCENDING)]
-
     def json(self):
         return {
             '_id': self._id,
-            'topic_id': self.topic_id,
             'username': self.username,
             'message': self.message,
-            'picture':self.picture,
+            'picture': self.picture,
+            'likes': [self.likes],
             'date_posted': self.date_posted
         }
 
     def save_to_mongo(self):
         Database.insert(collection='post',
                         data=self.json())
+

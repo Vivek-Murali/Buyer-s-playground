@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+
+<div data-role="navview" style="height:100%;">
+    <div class="navview-pane">
+        <button class="pull-button">
+            <span class="default-icon-menu"></span>
+        </button>
+
+        <div class="suggest-box">
+            <form action="/new_post/{{username}}" method="post">
+        <input type="text" data-role="input" data-clear-button="false" name="content" data-search-button="true" placeholder="Send An Announcement">
+        <input class="button" type="submit" value="Submit">
+            </form></div>
+    </div>
+
+    <div class="navview-content flex-align-center flex-justify-center h-100">
+
+        {% if posts|length > 0 %}
+        {% for post in posts %}
+
+            <hr>
+            <p class="text-center" style="color: dodgerblue">{{ post.username}}</p>
+            <p class="text-center">{{ post.message}}</p>
+            <p class="text-center">{{post.date_posted}}</p>
+            <p class="text-center">{{post.likes|length}}</p>
+            <hr>
+
+        {% endfor %}
+    {% else %}
+        <h4>There aren't any posts yet!</h4>
+    {% endif %}
+
+
+    </div>
+</div>
+
+{% endblock %}
