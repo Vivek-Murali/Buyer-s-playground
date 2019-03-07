@@ -1,0 +1,6 @@
+babel
+weasyprint
+django
+
+[testing]
+Jinja2

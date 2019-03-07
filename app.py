@@ -13,6 +13,9 @@ from models.blockchain import Blockchain
 from models.ass_blockchain import AssetsBlockchain
 from uuid import uuid4
 from models.announcement import Anno
+from twocheckout.error import TwocheckoutError
+import twocheckout
+import qrcode
 
 
 app = Flask(__name__)  # '__main__'
@@ -58,9 +61,13 @@ def register_user():
     gender = request.form['gender']
     phone = request.form['mobile']
     photo = request.files['file']
+    likes = None
+    type = request.form['type']
+    status = 1
+    bal = 0
     mongo.save_file(photo.filename, photo)
     picture = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
-    User.register(email, username, password, first_name, last_name, gender, phone, picture, photo.filename)
+    User.register(email, username, password, first_name, last_name, gender, phone, picture, photo.filename, likes, type,status,bal)
     flash("Registered Successfully", category='success')
     return render_template("register.html")
 
@@ -76,6 +83,91 @@ def user_home():
     return render_template('home.html', username=session['username'])
 
 
+@app.route('/User_profile/<string:username>')
+def user_profile(username):
+    users = User.from_user_profile(username)
+    return render_template('user_profile.html', username=session['username'], users=users)
+
+
+@app.route('/edit_profile', methods=['POST'])
+def edit_man():
+        picture1 = session['picture']
+        print(picture1)
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        gender = request.form['gender']
+        phone = request.form['mobile']
+        username = session['username']
+        photo = request.files['file']
+        col1 = Database.DATABASE['users']
+        mongo.save_file(photo.filename, photo)
+        col1.update_one({"username": username},
+                        {"$set": {"first_name": first_name, "last_name": last_name, "gender": gender, "phone": phone, "picture_name":photo.filename}},
+                        upsert=False)
+        flash("Edited Successfully", category='success')
+        return render_template('home.html', username=session['username'], picture =session['picture'])
+
+
+@app.route('/edit_profile2')
+def edit_template():
+    return render_template('edit_profile.html', username=session['username'],
+                           picture=session['picture'])
+
+
+@app.route('/add_money')
+def add_money_template():
+    return render_template('addmoney.html', username=session['username'],
+                           picture=session['picture'])
+
+
+@app.route('/add_process', methods=['POST'])
+def add_process_template():
+    money = request.form['ammount']
+    session['money'] = money
+    return render_template('payout.html', username=session['username'],
+                           money=session['money'])
+
+
+@app.route('/order', methods=['POST'])
+def order():
+    # Setup credentials and environment
+    twocheckout.Api.auth_credentials({
+        'private_key': '4D22A936-A56C-4FDE-824B-5A606C5E0BD2',
+        'seller_id': '901403850',
+        'mode': 'sandbox'
+    })
+    print(request.form["token"])
+    # Setup arguments for authorization request
+    args = {
+        'merchantOrderId': '123',
+        'token': request.form["token"],
+        'currency': 'USD',
+        'total': '1.00',
+        'billingAddr': {
+            'name': 'Testing Tester',
+            'addrLine1': '123 Test St',
+            'city': 'Columbus',
+            'state': 'OH',
+            'zipCode': '43123',
+            'country': 'USA',
+            'email': 'example@2co.com',
+            'phoneNumber': '555-555-5555'
+        }
+    }
+
+    # Make authorization request
+    try:
+        result = twocheckout.Charge.authorize(args)
+        return result.responseMsg
+    except TwocheckoutError as error:
+        return error.msg
+
+
+@app.route('/insurance')
+def insurance_template():
+    return render_template("insurance.html", username=session['username'])
+
+
 @app.route('/auth_login', methods=['POST'])
 def login_user():
     username = request.form['username']
@@ -88,6 +180,13 @@ def login_user():
         return render_template("index_home.html")
 
     user = mongo.db.users.find_one_or_404({'username':username})
+    print(user['type'])
+    if user['type'] == 2:
+        return render_template("home_admin.html", username=session['username'],user=user)
+    elif user['type'] == 3:
+        return render_template("home_auction.html", username=session['username'], user=user)
+    elif user['type'] == 4:
+        return render_template("home_logistic.html", username=session['username'], user=user)
 
     return render_template("home.html", username=session['username'],user=user)
 
@@ -110,7 +209,6 @@ def anno():
 
 @app.route('/view_user_all/<string:username>')
 def user_post(username):
-    topic = User.get_by_username(username)
     posts = Anno.from_all_topic()
     return render_template('anno.html', posts=posts,
                            username=session['username'])

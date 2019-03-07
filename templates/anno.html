@@ -8,39 +8,40 @@
   {{ super() }}
 {% endblock %}
 {% block content %}
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-4">
+            <form class="form-group" action="/new_post/<string:username>" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+        	<input type="text" id="content" class="form-control" name="content" placeholder="Announcement" required="required">
+        </div>
+          <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
+            </form>
+        </div>
+        <div class="col-xs-8" id="well">
+            {% if posts|length > 0 %}
+            {% for post in posts %}
+            <div class="thumbnail" align="center">
+          <img src="{{url_for('file',filename=post.picture)}}" alt="Lights" style="height:70px;width:100%;" align="center">
+          <div class="caption" align="center">
+              <h4> Announcement by {{ post.username}}</h4>
+              <p class="fg-gray">{{post.date_posted}}</p>
+                {{ post.message}}
+              <br>
+              <br>
+              <p class="text-center">Hits {{post.likes|length}}</p>&nbsp;&nbsp; <button class="button secondary">Hit</button>
+          </div>
+      </div>
 
-<div data-role="navview" style="height:100%;">
-    <div class="navview-pane">
-        <button class="pull-button">
-            <span class="default-icon-menu"></span>
-        </button>
 
-        <div class="suggest-box">
-            <form action="/new_post/{{username}}" method="post">
-        <input type="text" data-role="input" data-clear-button="false" name="content" data-search-button="true" placeholder="Send An Announcement">
-        <input class="button" type="submit" value="Submit">
-            </form></div>
-    </div>
-
-    <div class="navview-content flex-align-center flex-justify-center h-100">
-
-        {% if posts|length > 0 %}
-        {% for post in posts %}
-
-            <hr>
-            <p class="text-center" style="color: dodgerblue">{{ post.username}}</p>
-            <p class="text-center">{{ post.message}}</p>
-            <p class="text-center">{{post.date_posted}}</p>
-            <p class="text-center">{{post.likes|length}}</p>
-            <hr>
 
         {% endfor %}
     {% else %}
         <h4>There aren't any posts yet!</h4>
-    {% endif %}
-
-
-    </div>
-</div>
-
+            {% endif %}
+   </div>
+    </div></div>
 {% endblock %}
+

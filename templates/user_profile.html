@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<br>
+<div class="container">
+    <div class="row">
+        {% for user in users %}
+    <div class="col-xs-4"><img class="img-circle" src="{{url_for('file',filename=user.picture_name)}}" style="width:70px; height:70px;"> <h1> {{ username }}</h1>
+      {% endfor %}
+        <a href="/edit_profile2">Edit Profile</a>&nbsp;&nbsp;<a href="/add_money">Add Money</a></div>
+        <div class="col-xs-8">
+        <br><div class="container" align="center">
+            <table align="center">
+            <tr>
+      <th style="text-align:center;">Wallet Balance</th>
+      <th> &nbsp;</th>
+      <th style="text-align:center;">Hits</th>
+      <th>&nbsp; </th>
+      <th style="text-align:center;">List of Wish Items</th>
+      <th>&nbsp; </th>
+      </tr>
+            </table></div>
+    </div>
+
+    </div>
+
+        <hr style="height:2px; color:#cdd0d4;">
+<div class="row">
+    <div class="col-xs-4">
+        {% for user in users %}
+            <label>First Name:</label>
+            <p>{{ user.first_name}}</p>
+            <label>Last Name:</label>
+            <p>{{ user.last_name}}</p>
+            <label>Gender:</label>
+            <p>{{ user.gender}}</p>
+            <label>Email:</label>
+            <p>{{ user.email}}</p>
+            <label>Mobile Number:</label>
+            <p>{{ user.phone}}</p>
+            <hr>
+        {% endfor %}</div>
+     <div class="col-xs-8">
+        <h3 align="center"> {{ username }}'s Transaction History</h3>
+    </div>
+    </div>
+
+</div>
+{% endblock %}

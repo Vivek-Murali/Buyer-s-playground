@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+<br/>
+    <br/>
+    {{username}}
+<div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+    <form class="form-container" id="login-form" action="/add_process" method="post">
+        <div class="form-group">
+            <label for="ammount">Ammount</label>
+            <input type="text" id="ammount" class="form-control" name="ammount">
+        </div>
+
+        <button type="submit" class="btn btn-success">Add Money</button>
+    </form>
+        </div>
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+
+</div>
+</div>
+{% endblock %}

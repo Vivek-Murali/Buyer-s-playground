@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <br/>
+    <br/>
+    <h3>Amount :&nbsp;{{money}}</h3>
+<div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+        <form class="form-container" id="myCCForm" action="/order" method="post">
+            <input id="token" name="token" type="hidden" value="">
+            <div class="form-group">
+                <label>
+                    <span>Card Number</span>
+                </label>
+                <input id="ccNo" type="text" size="20" value="" placeholder="Card Number" autocomplete="off" required />
+            </div>
+            <div class="form-group">
+                <label>
+                    <span>Expiration Date (MM/YYYY)</span>
+                </label>
+                <div class="row">
+                <div class="col-sm-4">
+                <input type="text" size="2" id="expMonth" placeholder="MM"/>
+                </div> <span style="font-weight: bold; font-size:20pt;">/</span><div class="col-sm-4"><input type="text" size="2" id="expYear" required placeholder="YYYY"/></div></div>
+            </div>
+            <div class="form-group">
+                <label>
+                    <span>CVV Number</span>
+                </label>
+                <input id="cvv" size="3" type="text" autocomplete="off" required style="width:60px;" value="" placeholder="CVV"/>
+            </div>
+            <div class="form-group">
+                <label>
+                    <span>Name on the card</span>
+                </label>
+                <input id="name" size="4" type="text" placeholder="Name on the card" value="" autocomplete="off" required />
+            </div>
+            <input type="submit" class="btn btn-success" value="Submit">
+        </form>
+        </div>
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+
+</div>
+</div>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="https://www.2checkout.com/checkout/api/2co.min.js"></script>
+
+        <script>
+            // Called when token created successfully.
+            var successCallback = function(data) {
+                var myForm = document.getElementById('myCCForm');
+
+                // Set the token as the value for the token input
+                myForm.token.value = data.response.token.token;
+
+                // IMPORTANT: Here we call `submit()` on the form element directly instead of using jQuery to prevent and infinite token request loop.
+                myForm.submit();
+            };
+
+            // Called when token creation fails.
+            var errorCallback = function(data) {
+                if (data.errorCode === 200) {
+                    tokenRequest();
+                } else {
+                    alert(data.errorMsg);
+                }
+            };
+
+            var tokenRequest = function() {
+                // Setup token request arguments
+                var args = {
+                    sellerId: "901403850",
+                    publishableKey: "2EB2B23F-2DCC-444B-A1E4-F8FED78664D2",
+                    ccNo: $("#ccNo").val(),
+                    cvv: $("#cvv").val(),
+                    expMonth: $("#expMonth").val(),
+                    expYear: $("#expYear").val()
+                };
+
+                // Make the token request
+                TCO.requestToken(successCallback, errorCallback, args);
+            };
+
+            $(function() {
+                // Pull in the public encryption key for our environment
+                TCO.loadPubKey('sandbox');
+
+                $("#myCCForm").submit(function(e) {
+                    // Call our token request function
+                    tokenRequest();
+
+                    // Prevent form from submitting
+                    return false;
+                });
+            });
+        </script>
+{% endblock %}

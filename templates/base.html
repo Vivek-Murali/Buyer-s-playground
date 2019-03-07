@@ -28,6 +28,7 @@
     <script href="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
 
 
+
 </head>
 <body>
 <section class="banner-area" id="home">
@@ -65,7 +66,7 @@
             {% if session['logged_in'] == True %}
                     <li><a href="/view_user_all/{{ username }}">Announcements</a></li>
               <li><a href="/assets/{{ username }}">Assets</a></li>
-                    <li><a href="/profile/{{ username }}">{{username}}</a></li>
+                    <li><a href="/User_profile/{{ username }}">{{username}}</a></li>
                     <li><a href="#">Wish List</a></li>
                     {{ nav_link('logout_user', 'Sign Out') }}
             {% else %}

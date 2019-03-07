@@ -7,7 +7,7 @@ __author__ = 'jetfire'
 
 
 class User(object):
-    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes,_id=None):
+    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes, type,bal,status,_id=None):
         self.email = email
         self.password = password
         self.first_name = first_name
@@ -18,6 +18,9 @@ class User(object):
         self.picture = picture
         self.picture_name = picture_name
         self.likes = likes
+        self.type = type
+        self.bal = bal
+        self.status = status
         self._id = uuid.uuid4().hex if _id is None else _id
 
     @classmethod
@@ -51,13 +54,13 @@ class User(object):
         return False
 
     @classmethod
-    def register(cls, email, username, password, first_name, last_name, gender, phone, picture,picture_name):
+    def register(cls, email, username, password, first_name, last_name, gender, phone, picture,picture_name, likes,type,status,bal):
         user = cls.get_by_username(username)
         if user is None:
             hashpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             # User doesn't exist, so we can create it
             ''' Database.insert("users", {"email": email, "username": username, "password": hashpass, "first_Name": first_name, "last_name": last_name, "gender": gender, "phone": phone, "ava_hash":ava_hash})'''
-            new_user = cls(email, username, hashpass, first_name, last_name, gender, phone, picture,picture_name)
+            new_user = cls(email, username, hashpass, first_name, last_name, gender, phone, picture,picture_name,likes, type,status,bal)
             new_user.save_to_mongo()
             session['username'] = username
             return True
@@ -104,14 +107,22 @@ class User(object):
             "_id": self._id,
             "username":self.username,
             "password": self.password,
-             "first_name": self.first_name,
-             "last_name": self.last_name,
-             "gender": self.gender,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "gender": self.gender,
             "phone": self.phone,
-              "picture":self.picture,
+            "picture":self.picture,
             "picture_name":self.picture_name,
-            "likes":[self.email],
+            "likes":[self.likes],
+            "type":self.type,
+            "status":self.status,
+            "current_balance":self.bal
         }
 
     def save_to_mongo(self):
         Database.insert("users", self.json())
+
+    @staticmethod
+    def from_user_profile(username):
+        return [post for post in
+                Database.find(collection='users', query={'username': username})]

@@ -1,0 +1,66 @@
+html {
+    font-size: 9pt;
+    font-family: "Droid Serif", "DejaVu Serif", "STIX", serif;
+}
+
+.section {
+    margin-top: 1cm;
+}
+
+.invoiceTable thead td, .text-center {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+/**
+ * Address table
+ */
+ .addressTable tr:nth-child(1) td {
+     border-bottom: 1px solid black;
+ }
+
+ .small {
+     font-size: 7pt;
+ }
+
+/**
+ * Info table
+ */
+.infoTable {
+    margin-top: 3cm;
+    width: 100%;
+}
+
+/**
+ * Invoice table
+ */
+.invoiceTable {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.invoiceTable td {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+.invoiceTable thead {
+    background: lightgray;
+}
+
+.invoiceTable .padrow {
+    height: 10px;
+}
+
+.invoiceTable .tfoot td {
+    border: none;
+    padding: 2px;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
