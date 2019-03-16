@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+<img src="{{ url_for('file',filename=user['picture_name']) }}" style="height:100px; width:10%;">
+{% endblock %}
+{% block content %}
+<br/>
+<div class="container"><h3>Hello,<span style="color:blue"> {{ username }} Admin</span></h3>
+
+<br/>
+    <br/>
+    <div class="row">
+    <div class="col-md-4">
+      <div class="thumbnail">
+        <a href="/list_admin">
+          <img src="static/img/office-2761159_1920.png" alt="Lights" style="width:100%;height:230px;">
+          <div class="caption">
+            <p class="text-center">List of Collections</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="thumbnail">
+        <a href="#">
+          <img src="static/img/market-2626658_1920.jpg" alt="Lights" style="width:100%;height:230px;">
+          <div class="caption">
+            <p class="text-center">Auction</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="thumbnail">
+        <a href="#">
+          <img src="static/img/truck-1042600_1920.jpg" alt="Fjords" style="width:100%; height:230px;">
+          <div class="caption">
+            <p class="text-center">Delivery Status</p>
+
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+<br/>
+<div class="row">
+  <br/>
+  <div class="col-md-4">
+      <div class="thumbnail">
+        <a href="#">
+          <img src="static/img/shopping-cart-304843_1280.png" alt="Lights" style="width:100%; height:230px;">
+          <div class="caption">
+            <p class="text-center">E-Commerce</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="thumbnail">
+        <a href="#" >
+          <img src="static/img/pexels-photo-1537169.jpeg" alt="Lights" style="width:100%;height:230px;">
+          <div class="caption">
+            <p class="text-center">List of Products</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="thumbnail">
+        <a href="/insurance_create" >
+          <img src="static/img/live-1532301_1920.jpg" alt="Fjords" style="width:100%; height:230px;">
+          <div class="caption">
+            <p class="text-center">Insurance</p>
+
+          </div>
+        </a>
+      </div>
+    </div>
+
+    </div>
+    <br/>
+</div>
+
+{% endblock %}
+

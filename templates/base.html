@@ -53,21 +53,31 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
              {% if session['logged_in'] == True %}
+              {% if session['username'] == 'Admin' %}
+              {{ nav_link('admin_home', 'Home') }}
+              {% else %}
             {{ nav_link('user_home', 'Home') }}
+              {% endif %}
               {% else %}
                {{ nav_link('index_template1', 'Home') }}
               {% endif %}
-            {{ nav_link('index_template', 'Contact Us') }}
+              {% if session['username'] == 'Admin' %}
 
-
+                {% else %}
+               {{ nav_link('index_template', 'Contact Us') }}
+              {% endif %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
 
             {% if session['logged_in'] == True %}
                     <li><a href="/view_user_all/{{ username }}">Announcements</a></li>
-              <li><a href="/assets/{{ username }}">Assets</a></li>
+
                     <li><a href="/User_profile/{{ username }}">{{username}}</a></li>
+              {% if session['username'] == 'Admin' %}
+              {% else %}
                     <li><a href="#">Wish List</a></li>
+                 <li><a href="/asset">Assets</a></li>
+              {% endif %}
                     {{ nav_link('logout_user', 'Sign Out') }}
             {% else %}
                     {{ nav_link('login_template', 'Sign IN') }}

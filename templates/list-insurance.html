@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+<img src="{{ url_for('file',filename=user['picture_name']) }}" style="height:100px; width:10%;">
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+<br/>
+    <br/>
+<div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+        <form  id="new-blog" action="/insurance_all" method="post" enctype="multipart/form-data">
+        <div class="form-group row">
+            <label for="name">Insurance Name</label>
+            <input type="text" id="name" class="form-control" name="name">
+        </div>
+        <button type="submit" class="btn btn-success">Search</button>
+    </form>
+        <table align="center">
+            {% for u in lists %}
+            <tr>
+      <th style="text-align:center;">Insurance Name</th>
+      <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+      <th style="text-align:center;">Insurance Description</th>
+            <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">Insurance Type</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">URL</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">Action</th>
+      </tr>
+
+                <tr>
+
+                    <td style="text-align:center;"><p>{{u.name}}</p></td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><p>{{u.description}}</p></td>
+                     <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><p>{{u.type}}</p></td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.url}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="#">Edit</a>&nbsp;<a href="#">Delete</a> </td>
+      </tr>
+            {% endfor %}
+
+
+            </table>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+<img src="{{ url_for('file',filename=user['picture_name']) }}" style="height:100px; width:10%;">
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+<br/>
+    <br/>
+<div class="row">
+
+        <form  id="new-blog" action="/user_all" method="post" enctype="multipart/form-data">
+        <div class="form-group row">
+            <label for="name">UserName</label>
+            <input type="text" id="name" class="form-control" name="name">
+        </div>
+        <button type="submit" class="btn btn-success">Search</button>
+    </form>
+        <table align="center">
+            {% for u in lists %}
+            <tr>
+      <th style="text-align:center;">UserNames</th>
+      <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+      <th style="text-align:center;">Type</th>
+            <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">First Name</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">Last Name</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th style="text-align:center;">Email</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th style="text-align:center;">Gender</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th style="text-align:center;">Mobile No</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th style="text-align:center;">Picture</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th style="text-align:center;">Status</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th style="text-align:center;">Current Balance</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">Action</th>
+      </tr>
+
+                <tr>
+
+                    <td style="text-align:center;"><p>{{u.username}}</p></td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><p>{{u.type}}</p></td>
+                     <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><p>{{u.first_name}}</p></td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.last_name}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.email}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.gender}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.phone}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td><td style="text-align:center;">{{u.picture_name}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.status}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.current_balance}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="/edit_profile3">Edit</a>&nbsp;<a href="#">Delete</a> </td>
+      </tr>
+            {% endfor %}
+
+
+            </table>
+    </div>
+</div>
+
+{% endblock %}

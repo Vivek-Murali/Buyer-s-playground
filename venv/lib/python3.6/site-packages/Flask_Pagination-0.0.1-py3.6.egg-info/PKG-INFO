@@ -1,0 +1,27 @@
+Metadata-Version: 1.1
+Name: Flask-Pagination
+Version: 0.0.1
+Summary: Pagination Helpers for Flask Apps
+Home-page: https://github.com/rhyselsmore/flask-pagination
+Author: Rhys Elsmore
+Author-email: me@rhys.io
+License: Apache 2.0
+Description: Flask-Pagination
+        ================
+        
+        
+        History
+        =======
+        
+        0.0.1 (10/02/2014)
+        ----------------
+        
+        - Inception
+        - Initial Commit of Package to GitHub.
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.6
+Classifier: Programming Language :: Python :: 2.7

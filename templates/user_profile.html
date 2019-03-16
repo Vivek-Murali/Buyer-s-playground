@@ -14,8 +14,9 @@
         {% for user in users %}
     <div class="col-xs-4"><img class="img-circle" src="{{url_for('file',filename=user.picture_name)}}" style="width:70px; height:70px;"> <h1> {{ username }}</h1>
       {% endfor %}
-        <a href="/edit_profile2">Edit Profile</a>&nbsp;&nbsp;<a href="/add_money">Add Money</a></div>
+        <a href="/edit_profile2">Edit Profile</a>&nbsp;{% if session['username'] == 'Admin' %}{% else %}&nbsp;<a href="/add_money">Add Money</a></div>   {% endif %}
         <div class="col-xs-8">
+            {% if session['username'] == 'Admin' %}{% else %}
         <br><div class="container" align="center">
             <table align="center">
             <tr>
@@ -26,7 +27,16 @@
       <th style="text-align:center;">List of Wish Items</th>
       <th>&nbsp; </th>
       </tr>
-            </table></div>
+                <tr>
+                    {% for user in users %}
+                    <td style="text-align:center;"><p>{{user.bal}}</p>{% endfor %}</td>
+      <td> &nbsp;</td>
+      <td style="text-align:center;">Hits</td>
+      <td>&nbsp; </td>
+      <td style="text-align:center;">List of Wish Items</td>
+      <td>&nbsp; </td>
+      </tr>
+            </table></div>{% endif %}
     </div>
 
     </div>
@@ -48,7 +58,8 @@
             <hr>
         {% endfor %}</div>
      <div class="col-xs-8">
-        <h3 align="center"> {{ username }}'s Transaction History</h3>
+         {% if session['username'] == 'Admin' %}{% else %}
+        <h3 align="center"> {{ username }}'s Transaction History</h3>{% endif %}
     </div>
     </div>
 

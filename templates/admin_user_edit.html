@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<br>
+<h2>{{ username }}'s Profile Edit</h2>&nbsp;
+    <div class="container">
+        <div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+    <form class="form-container" action="/edit_profile_admin" method="post" enctype="multipart/form-data">
+		<h2>Edit Profile</h2>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-xs-6"><label for="user">First name</label><input type="text" id="first_name" class="form-control" name="first_name" placeholder="First Name" required="required"></div>
+				<div class="col-xs-6"><label for="user">Last name</label><input type="text" id="last_name" class="form-control" name="last_name" placeholder="Last Name" required="required"></div>
+			</div>
+        </div>
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <label>
+            <input type="radio" name="gender" id="optionsRadios1" value="Male" required="required">
+            Male
+           </label>
+           <label>
+           <input type="radio" name="gender" id="optionsRadios2" value="Female" required="required">
+           Female
+          </label>
+        </div>
+
+        <div class="form-group">
+            <label for="mob">Mobile no</label>
+        	<input type="text" id="mobile" class="form-control" name="mobile" placeholder="Mobile Number" required="required">
+        </div>
+
+        <div class="form-group">
+            <label for="pass">Photo</label>
+            <input type="file" id="file" class="form-control" name="file" placeholder="Photo" required="required", accept="image/*">
+        </div>
+        <div class="form-group">
+            <label> Status</label>
+            <input type="text" id="status" class="form-control" name="status" placeholder="status" required="required",>
+        </div>
+        <div class="form-group">
+            <label for="pass">type</label>
+            <input type="text" id="type" class="form-control" name="type" placeholder="Type" required="required">
+        </div>
+
+
+            <button type="submit" class="btn btn-success btn-lg btn-block">Edit</button>
+    </form>
+    </div>
+        <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    </div>
+    </div>
+
+{% endblock %}

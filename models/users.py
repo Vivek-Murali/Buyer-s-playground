@@ -7,7 +7,7 @@ __author__ = 'jetfire'
 
 
 class User(object):
-    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes, type,bal,status,_id=None):
+    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes, type, bal,status,_id=None):
         self.email = email
         self.password = password
         self.first_name = first_name
@@ -116,7 +116,7 @@ class User(object):
             "likes":[self.likes],
             "type":self.type,
             "status":self.status,
-            "current_balance":self.bal
+            "bal": self.bal,
         }
 
     def save_to_mongo(self):

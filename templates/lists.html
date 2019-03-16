@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+<img src="{{ url_for('file',filename=user['picture_name']) }}" style="height:100px; width:10%;">
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+<br/>
+    <br/>
+<div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+        <table align="center">
+            <tr>
+      <th style="text-align:center;">Collection Name</th>
+      <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+      <th style="text-align:center;">Action</th>
+      </tr>
+                <tr>
+
+                    <td style="text-align:center;">User</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="/list_users_temp">View</a></td>
+      </tr>
+            <tr>
+
+                    <td style="text-align:center;">Assets</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="#">View</a></td>
+      </tr> <tr>
+
+                    <td style="text-align:center;">Transaction</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="#">View</a></td>
+      </tr> <tr>
+
+                    <td style="text-align:center;">Products</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="/list_product_temp">View</a></td>
+      </tr> <tr>
+
+                    <td style="text-align:center;">Insurance</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="/list_insurance_temp">View</a></td>
+      </tr>
+            <tr>
+
+                    <td style="text-align:center;">Supply Chain</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="#">View</a></td>
+      </tr><tr>
+
+                    <td style="text-align:center;">Auction</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="#">View</a></td>
+      </tr><tr>
+
+                    <td style="text-align:center;">Bids</td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><a href="#">View</a></td>
+      </tr>
+
+            </table>
+    </div>
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+
+</div>
+</div>
+
+{% endblock %}

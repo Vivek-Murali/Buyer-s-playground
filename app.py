@@ -2,6 +2,7 @@ __author__ = 'Jetfire'
 
 
 from flask import Flask, render_template, request, session, make_response, flash, jsonify
+from flask_paginate import Pagination, get_page_args
 #from flask_avatars import Avatars
 import hashlib
 import datetime
@@ -13,9 +14,8 @@ from models.blockchain import Blockchain
 from models.ass_blockchain import AssetsBlockchain
 from uuid import uuid4
 from models.announcement import Anno
-from twocheckout.error import TwocheckoutError
-import twocheckout
 import qrcode
+import stripe
 
 
 app = Flask(__name__)  # '__main__'
@@ -27,6 +27,12 @@ BASECOORD = [22.3511148, 78.6677428]
 blockchain = Blockchain()
 ablockchain = AssetsBlockchain()
 node_identifier = str(uuid4()).replace('-', '')
+stripe_keys = {
+  'secret_key': "sk_test_lRubQfxlGGUAHqZQzpJ78M8u",
+  'publishable_key':"pk_test_he7jrXDbjsKMIR1JofcmzCnH"
+}
+
+stripe.api_key = stripe_keys['secret_key']
 
 
 @app.before_first_request
@@ -83,6 +89,44 @@ def user_home():
     return render_template('home.html', username=session['username'])
 
 
+@app.route('/admin_home')
+def admin_home():
+    return render_template('Admin_home.html', username=session['username'])
+
+
+@app.route('/list_admin')
+def list_admin():
+    return render_template('lists.html', username=session['username'])
+
+
+@app.route('/list_product_temp')
+def list_products_temp():
+    return render_template('list-products.html', username=session['username'])
+
+
+@app.route('/list_product',methods=['POST'])
+def list_products():
+    name = request.form['name']
+    if name == 'All':
+        lists = [post for post in
+                 Database.find(collection='products', query={})]
+        print(lists)
+    else:
+        lists = [post for post in Database.find(collection='products', query={'commodity':name})]
+        print(lists)
+    return render_template("list-products.html", username=session['username'], lists=lists)
+
+
+@app.route('/list_users_temp')
+def list_users_temp():
+    return render_template('all_users.html', username=session['username'])
+
+
+@app.route('/list_insurance_temp')
+def list_insurance_temp():
+    return render_template('list-insurance.html', username=session['username'])
+
+
 @app.route('/User_profile/<string:username>')
 def user_profile(username):
     users = User.from_user_profile(username)
@@ -125,47 +169,122 @@ def add_process_template():
     money = request.form['ammount']
     session['money'] = money
     return render_template('payout.html', username=session['username'],
-                           money=session['money'])
+                           money=session['money'], key=stripe_keys['publishable_key'])
 
 
-@app.route('/order', methods=['POST'])
-def order():
-    # Setup credentials and environment
-    twocheckout.Api.auth_credentials({
-        'private_key': '4D22A936-A56C-4FDE-824B-5A606C5E0BD2',
-        'seller_id': '901403850',
-        'mode': 'sandbox'
-    })
-    print(request.form["token"])
-    # Setup arguments for authorization request
-    args = {
-        'merchantOrderId': '123',
-        'token': request.form["token"],
-        'currency': 'USD',
-        'total': '1.00',
-        'billingAddr': {
-            'name': 'Testing Tester',
-            'addrLine1': '123 Test St',
-            'city': 'Columbus',
-            'state': 'OH',
-            'zipCode': '43123',
-            'country': 'USA',
-            'email': 'example@2co.com',
-            'phoneNumber': '555-555-5555'
-        }
-    }
+@app.route('/charge', methods=['POST'])
+def charge():
+    # Amount in cents
+    amount = int(session['money'])
+    username = session['username']
+    card_number = request.form['cno']
+    exp_month = request.form['expMonth']
+    exp_year = request.form['expYear']
+    cvv_no = request.form['cvv']
+    des = "Added Money to Wallet"
+    token = stripe.Token.create(
+        card={
+            "number": card_number,
+            "exp_month": exp_month,
+            "exp_year": exp_year,
+            "cvc": cvv_no
+        },
+    )
+    user = mongo.db.users.find_one_or_404({'username': username})
+    customer = stripe.Customer.create(
+        email=user['email'],
+        source=token
+    )
 
-    # Make authorization request
-    try:
-        result = twocheckout.Charge.authorize(args)
-        return result.responseMsg
-    except TwocheckoutError as error:
-        return error.msg
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='inr',
+        description='Flask Charge'
+    )
+    Database.insert('Transaction_Normal', {"token_id": token, "username": username, "email": user['email'], "amount": amount,
+                                    "description": des})
+    col1 = Database.DATABASE['users']
+    col1.update_one({"username": username},
+                    {"$inc": {"bal":amount}},
+                    upsert=False)
+    flash("Added Successfully", category='success')
+
+    return render_template('home.html', amount=amount,username=session['username'],
+                           picture=session['picture'])
 
 
 @app.route('/insurance')
 def insurance_template():
     return render_template("insurance.html", username=session['username'])
+
+
+@app.route('/insurance_create')
+def insurance_template_create():
+    return render_template("insurace_create.html", username=session['username'])
+
+
+@app.route('/insurance_reg', methods=['POST'])
+def insurance_template_reg():
+    name = request.form['name']
+    description = request.form['description']
+    type = request.form['type']
+    url =  request.form['url']
+    Database.insert('insurance', {'name':name,'description': description, 'type':type, 'url':url})
+    return render_template("insurace_create.html", username=session['username'])
+
+
+@app.route('/insurance_all', methods=['POST'])
+def insurance_template_all():
+    name = request.form['name']
+    if name == 'All':
+        lists = [post for post in
+                 Database.find(collection='insurance', query={})]
+        print(lists)
+    else:
+        lists = [post for post in Database.find(collection='insurance', query={'name': name})]
+        print(lists)
+    return render_template("list-insurance.html", username=session['username'], lists=lists)
+
+
+@app.route('/user_all', methods=['POST'])
+def user_template_all():
+    name = request.form['name']
+    if name == 'All':
+        lists = [post for post in
+                 Database.find(collection='users', query={})]
+        print(lists)
+    else:
+        lists = [post for post in Database.find(collection='users', query={'username': name})]
+        print(lists)
+    return render_template("all_users.html", username=session['username'], lists=lists)
+
+
+@app.route('/edit_profile_admin', methods=['POST'])
+def edit_man_admin():
+        picture1 = session['picture']
+        print(picture1)
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        gender = request.form['gender']
+        phone = request.form['mobile']
+        username = session['username']
+        photo = request.files['file']
+        status = request.form['status']
+        type1 = request.form['type']
+        col1 = Database.DATABASE['users']
+        mongo.save_file(photo.filename, photo)
+        col1.update_one({"username": username},
+                        {"$set": {"first_name": first_name, "last_name": last_name, "gender": gender, "phone": phone, "picture_name":photo.filename, "status":status, "type":type1}},
+                        upsert=False)
+        flash("Edited Successfully", category='success')
+        return render_template('all_users.html', username=session['username'], picture =session['picture'])
+
+
+@app.route('/edit_profile3')
+def edit_template_admin():
+    return render_template('admin_user_edit.html', username=session['username'],
+                           picture=session['picture'])
 
 
 @app.route('/auth_login', methods=['POST'])
@@ -182,7 +301,7 @@ def login_user():
     user = mongo.db.users.find_one_or_404({'username':username})
     print(user['type'])
     if user['type'] == 2:
-        return render_template("home_admin.html", username=session['username'],user=user)
+        return render_template("Admin_home.html", username=session['username'],user=user)
     elif user['type'] == 3:
         return render_template("home_auction.html", username=session['username'], user=user)
     elif user['type'] == 4:
@@ -259,6 +378,7 @@ def create_new_asset():
         description = request.form['description']
         file1 = request.files['file']
         user = User.get_by_username(session['username'])
+        print(user)
         values = AssetsBlockchain.json(user.username,user._id,file1.filename,description)
         # Check that the required fields are in the POST'ed data
         required = ['username', 'user_id','filename','description']

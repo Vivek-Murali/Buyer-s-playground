@@ -8,10 +8,36 @@
   {{ super() }}
 {% endblock %}
 {% block content %}
-<div class="container">
-    <h2>{{ username }}'s Auction</h2>&nbsp;
-    <br>
-        <br>
+<br>
+    <div class="container">
+        <div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+    <form class="form-container" action="/auth_register" method="post" enctype="multipart/form-data">
+		<h2>Post An Auction</h2>
+         <div class="form-group">
+              <label for="name">Name of the Commodity</label>
+        	<input type="text" id="name" class="form-control" name="name"  required="required">
+        </div>
+        <div class="form-group">
+             <label>Commodity Value</label>
+        	<input type="text" id="value" class="form-control" name="value"  required="required">
+        </div>
 
-</div>
+        <div class="form-group">
+            <label >Quantity</label>
+        	<input type="text" id="Quantity" class="form-control" name="Quantity"  required="required">
+        </div>
+
+		<div class="form-group">
+            <label >Model Price</label>
+            <input type="text" id="price" class="form-control" name="price" required="required">
+        </div>
+
+            <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
+    </form>
+    </div>
+        <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    </div>
+    </div>
 {% endblock %}
