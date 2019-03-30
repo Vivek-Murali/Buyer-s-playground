@@ -31,15 +31,9 @@
         	<input type="email" id="email" class="form-control" name="email" placeholder="Email" required="required">
         </div>
         <div class="form-group">
-            <label for="type">Account :</label>
-            <label>
-            <input type="radio" name="type" id="optionsRadios4" value="1" required="required">
-            Normal
-           </label>
-           <label>
-           <input type="radio" name="type" id="optionsRadios3" value="3" required="required">
-           Auction
-          </label>
+
+            <label>Date of Birth</label>
+            <input type="text" id="datepicker" class="form-control" name="date" required="required" placeholder="Date of Birth">
         </div>
 
         <div class="form-group">
@@ -80,5 +74,12 @@
         <div class="col-md-4 col-sm-4 col-xs-12"></div>
     </div>
     </div>
+    <script>
+   $( "#datepicker" ).datepicker({
+     changeMonth: true,
+     changeYear: true,
+     yearRange: "1930:2000"
+ });
+     </script>
 
 {% endblock %}

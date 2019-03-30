@@ -46,15 +46,15 @@
     <div class="col-xs-4">
         {% for user in users %}
             <label>First Name:</label>
-            <p>{{ user.first_name}}</p>
+            {{ user.first_name}}<br>
             <label>Last Name:</label>
-            <p>{{ user.last_name}}</p>
+           {{ user.last_name}} <br>
             <label>Gender:</label>
-            <p>{{ user.gender}}</p>
+            {{ user.gender}}<br>
             <label>Email:</label>
-            <p>{{ user.email}}</p>
+            {{ user.email}}<br>
             <label>Mobile Number:</label>
-            <p>{{ user.phone}}</p>
+            {{ user.phone}}<br>
             <hr>
         {% endfor %}</div>
      <div class="col-xs-8">

@@ -1,120 +1,93 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Mar 14 00:15:32 2019
+Created on Mon Mar 18 07:19:57 2019
 
 @author: jetfire
 """
 
+import urllib3 as ul 
+from bs4 import BeautifulSoup
+import os
+import time
+import requests
+from urllib.request import urlopen
+import random
+import json
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from pandas.tseries.offsets import MonthEnd
-from keras.callbacks import EarlyStopping
-from keras.layers import Dense
-from keras.models import Sequential
-import keras.backend as K
-from sklearn.preprocessing import MinMaxScaler
-from keras.layers import LSTM
-
-#Initilaing Scaler to scale the values for the modle values
-sc = MinMaxScaler()
-#data preprocessing
-df  = pd.read_csv("Apple_year_data.csv")
-df.drop(['Unnamed: 0'], axis=1, inplace=True)
-df['Arrival Date'] = pd.to_datetime(df['Arrival Date'])
-df = df.set_index('Arrival Date')
-split_date = pd.Timestamp('01-09-2018')
-train = df.loc[:split_date, ['Modal Price(Rs./Quintal)']]
-test = df.loc[split_date:, ['Modal Price(Rs./Quintal)']]
-train_sc = sc.fit_transform(train)
-test_sc = sc.transform(test)
-X_train  = train_sc[:-1]
-y_train = train_sc[1:]
-X_test = test_sc[:-1]
-y_test = test_sc[1:]
-
-
-K.clear_session()
-#Modeling of the fully connected predectors
-model = Sequential()
-model.add(Dense(24, input_dim = 1, activation='relu'))
-model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer='adam')
-model.summary()
-early_stop = EarlyStopping(monitor='loss', patience=10,verbose=10)
-model.fit(X_train,y_train,epochs=200,batch_size=2,verbose=1,callbacks=[early_stop])
-
-y_pred = model.predict(X_test)
-plt.plot(y_test)
-plt.plot(y_pred)
-#MOdeling of Recurent Predictor
-'''X_train.shape
-X_train[:,None].shape
-X_train_t = X_train[:,None]
-X_test_t = X_test[:,None]
-K.clear_session()
-model = Sequential()
-model.add(LSTM(6, input_shape=(1,1)))
-model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer='adam')
-model.fit(X_train_t,y_train,epochs=200,batch_size=2,verbose=1,callbacks=[early_stop])
-y_pred = model.predict(X_test_t)
-plt.plot(y_test)
-plt.plot(y_pred)
-
-#windows
-train_sc_df = pd.DataFrame(train_sc,columns=['Scaled'],index=train.index)
-test_sc_df = pd.DataFrame(test_sc,columns=['Scaled'],index=test.index)
-for s in range(1,32):
-    train_sc_df['shift_{}'.format(s)] = train_sc_df['Scaled'].shift(s)
-    test_sc_df['shift_{}'.format(s)] = test_sc_df['Scaled'].shift(s)
-    
-X_train = train_sc_df.dropna().drop('Scaled', axis=1)
-y_train = train_sc_df.dropna()[['Scaled']]
-X_test = test_sc_df.dropna().drop('Scaled',axis=1)
-y_test = test_sc_df.dropna()[['Scaled']]   
-
-X_train = X_train.values
-X_test = X_test.values
-y_train = y_train.values
-y_test = y_test.values
-
-model = Sequential()
-model.add(Dense(31, input_dim = 31, activation='relu'))
-model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer='adam')
-model.summary()
-model.fit(X_train,y_train,epochs=200,batch_size=2,verbose=1,callbacks=[early_stop])
-y_pred = model.predict(X_test)
-plt.plot(y_test)
-plt.plot(y_pred)    
-
-X_train_t = X_train.reshape(X_train.shape[0],1,31)
-X_test_t = X_test.reshape(X_test.shape[0],1,31)
-K.clear_session()
-model = Sequential()
-model.add(LSTM(6, input_shape=(1,31)))
-model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer='adam')
-model.fit(X_train_t,y_train,epochs=200,batch_size=2,verbose=1,callbacks=[early_stop])
-y_pred = model.predict(X_test_t)
-plt.plot(y_test)
-plt.plot(y_pred)
-
-
-#test
-
-X_train_t = X_train.reshape(X_train.shape[0],31,1)
-X_test_t = X_test.reshape(X_test.shape[0],31,1)
-K.clear_session()
-model = Sequential()
-model.add(LSTM(6, input_shape=(31,1)))
-model.add(Dense(1))
-model.compile(loss='mean_squared_error', optimizer='adam')
-model.fit(X_train_t,y_train,epochs=600,batch_size=65,verbose=1)
-y_pred = model.predict(X_test_t)
-plt.plot(y_test)
-plt.plot(y_pred)
-'''
+import os
+from selenium import webdriver
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.by import By
+from selenium.common import exceptions
+while True:
+    try:
+        session = webdriver.Chrome()
+        session.get('http://agmarknet.gov.in/PriceAndArrivals/DatewiseCommodityReport.aspx')
+        hh = webdriver.ChromeOptions()
+        hh.add_argument("headless")
+        driver = webdriver.Chrome(executable_path="/usr/bin/chromedriver",options=hh)
+        link = 'http://agmarknet.gov.in/PriceAndArrivals/DatewiseCommodityReport.aspx'
+        http = ul.PoolManager()                                      
+        page =http.request('GET',link)
+        soup = BeautifulSoup(page.data)
+        commodities = soup.find_all('select',id='middlepnl')
+        driver.get(link) #opening the link in the driver .
+        path1 = '//select[@id="cphBody_cboYear"]'
+        year_element = driver.find_element_by_xpath(path1)
+        year_select = Select(year_element)
+        year_values =  [ '%s' % o.get_attribute('value') for o in year_select.options[1:] ]
+        path2 = '//select[@id="cphBody_cboMonth"]'
+        month_element = driver.find_element_by_xpath(path2)
+        month_select = Select(month_element)
+        month_values =  [ '%s' % o.get_attribute('value') for o in month_select.options[1:] ]
+        for value in year_values:
+                year_select.select_by_value('2017')
+                for x in month_values:
+                    month_select.select_by_value(x)
+                    wait = WebDriverWait(driver, 15)
+                    wait.until(ec.visibility_of_element_located((By.ID,"cphBody_cboState")))
+                    State_select = Select(driver.find_element_by_id('cphBody_cboState'))
+                    State_values =  [ '%s' % o.get_attribute('value') for o in State_select.options[1:] ]
+                    for y in State_values:
+                        State_select.select_by_value('Karnataka')
+                        wait = WebDriverWait(driver, 15)
+                        wait.until(ec.visibility_of_element_located((By.ID,"cphBody_cboCommodity")))
+                        Commodity_select = Select(driver.find_element_by_id('cphBody_cboCommodity'))
+                        Commodity_values =  [ '%s' % o.get_attribute('value') for o in Commodity_select.options[1:] ]
+                        for z in Commodity_values:
+                            q = random.choice(Commodity_values)
+                            Commodity_select.select_by_value('10')
+                            wait = WebDriverWait(driver, 15)
+                            wait.until(ec.visibility_of_element_located((By.NAME,"ctl00$cphBody$btnSubmit")))
+                            print(x)
+                            driver.close()
+                            '''
+                            driver.find_element_by_id("cphBody_btnSubmit").click()
+                            wait = WebDriverWait(driver, 30)
+                            wait.until(ec.visibility_of_element_located((By.NAME,"ctl00$cphBody$Button1")))
+                            table = driver.find_elements(By.ID,"cphBody_gridRecords")
+                            rows = driver.find_elements(By.TAG_NAME, "tr")
+                            tb1 = driver.find_element_by_xpath('//*[@id="cphBody_gridRecords"]').get_attribute('outerHTML')
+                            df= pd.read_html(tb1)
+                            result = pd.concat([pd.DataFrame(df[i]) for i in range(len(df))],ignore_index=True)
+                            #convert the pandas dataframe to JSON
+                            result['Commodity_value'] = 10
+                            result['State'] = "Karnataka"
+                            json_records = result.to_json(orient='records')
+                            #csv_records = result.to_csv("test.csv", index=False)
+                            result.to_csv("test1.csv", index=False)
+                            print(json_records)
+                            #os.system("mongoimport -d Checking -c test1 --type csv --file test.csv --headerline")
+                            #print(json_records.items())
+                            ##df2.to_csv("test.csv")
+                            print("done")
+                            #df['State'] = ["Karnataka"]
+                            #df['Commodity_value'] = [17]
+                            driver.close()
+                            '''
+    except exceptions.WebDriverException:
+        pass                           

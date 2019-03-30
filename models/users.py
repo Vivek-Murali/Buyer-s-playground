@@ -7,7 +7,7 @@ __author__ = 'jetfire'
 
 
 class User(object):
-    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes, type, bal,status,_id=None):
+    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes, type, bal,status,dob,last_login,register_date,_id=None):
         self.email = email
         self.password = password
         self.first_name = first_name
@@ -21,6 +21,9 @@ class User(object):
         self.type = type
         self.bal = bal
         self.status = status
+        self.dob = dob
+        self.last_login= last_login
+        self.register_date= register_date
         self._id = uuid.uuid4().hex if _id is None else _id
 
     @classmethod
@@ -54,13 +57,13 @@ class User(object):
         return False
 
     @classmethod
-    def register(cls, email, username, password, first_name, last_name, gender, phone, picture,picture_name, likes,type,status,bal):
+    def register(cls, email, username, password, first_name, last_name, gender, phone, picture,picture_name, likes,type,status,bal,dob,last_login,register_date):
         user = cls.get_by_username(username)
         if user is None:
             hashpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             # User doesn't exist, so we can create it
             ''' Database.insert("users", {"email": email, "username": username, "password": hashpass, "first_Name": first_name, "last_name": last_name, "gender": gender, "phone": phone, "ava_hash":ava_hash})'''
-            new_user = cls(email, username, hashpass, first_name, last_name, gender, phone, picture,picture_name,likes, type,status,bal)
+            new_user = cls(email, username, hashpass, first_name, last_name, gender, phone, picture,picture_name,likes, type,status,bal,dob,last_login,register_date)
             new_user.save_to_mongo()
             session['username'] = username
             return True
@@ -117,6 +120,9 @@ class User(object):
             "type":self.type,
             "status":self.status,
             "bal": self.bal,
+            "dob": self.dob,
+            "last_login":self.last_login,
+            "register_date":self.register_date
         }
 
     def save_to_mongo(self):

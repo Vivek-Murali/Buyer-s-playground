@@ -52,18 +52,6 @@ while True:
     month_select = Select(month_element)
     
     month_values =  [ '%s' % o.get_attribute('value') for o in month_select.options[1:] ]
-    def month_select_updated(driver):
-        path2 = '//select[@id="cphBody_cboMonth"]'
-        month_element = driver.find_element_by_xpath(path2)
-        month_select = Select(month_element)
-        try:
-            month_select.text
-        except StaleElementReferenceException:
-            return True
-        except:
-            pass
-
-        return False
         
         
         
@@ -80,9 +68,9 @@ while True:
     
     
     for value in year_values:
-        year_select.select_by_value('2018')
+        year_select.select_by_value('2017')
         for x in month_values:
-            month_select.select_by_value('January')
+            month_select.select_by_value(x)
             wait = WebDriverWait(driver, 15)
             wait.until(ec.visibility_of_element_located((By.ID,"cphBody_cboState")))
             State_select = Select(driver.find_element_by_id('cphBody_cboState'))
@@ -95,7 +83,7 @@ while True:
                 Commodity_values =  [ '%s' % o.get_attribute('value') for o in Commodity_select.options[1:] ]
                 for z in Commodity_values:
                     q = random.choice(Commodity_values)
-                    Commodity_select.select_by_value('17')
+                    Commodity_select.select_by_value('10')
                     wait = WebDriverWait(driver, 15)
                     wait.until(ec.visibility_of_element_located((By.NAME,"ctl00$cphBody$btnSubmit")))
                     driver.find_element_by_id("cphBody_btnSubmit").click()
@@ -107,11 +95,11 @@ while True:
                     df= pd.read_html(tb1)
                     result = pd.concat([pd.DataFrame(df[i]) for i in range(len(df))],ignore_index=True)
                     #convert the pandas dataframe to JSON
-                    result['Commodity_value'] = 17
+                    result['Commodity_value'] = 10
                     result['State'] = "Karnataka"
                     json_records = result.to_json(orient='records')
                     #csv_records = result.to_csv("test.csv", index=False)
-                    result.to_csv("test.csv", index=False)
+                    result.to_csv("test1.csv", index=False)
                     print(json_records)
                     #os.system("mongoimport -d Checking -c test1 --type csv --file test.csv --headerline")
                     #print(json_records.items())

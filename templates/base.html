@@ -26,7 +26,10 @@
     <script src="/static/js/metro-4.2.37-718-5c7806dee8344.min.js"></script>
     <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css">
     <script href="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
-
+     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
 </head>
@@ -75,9 +78,15 @@
                     <li><a href="/User_profile/{{ username }}">{{username}}</a></li>
               {% if session['username'] == 'Admin' %}
               {% else %}
-                    <li><a href="#">Wish List</a></li>
-                 <li><a href="/asset">Assets</a></li>
+              {% if session['type'] == "3" %}
+               <li><a href="#">Auctions</a></li>
+              {% else %}
+               <li><a href="/req_auc">Auction Request</a></li>
               {% endif %}
+                    <li><a href="#">Wish List</a></li>
+                 <li><a href="/assets/{{username}}">Assets</a></li>
+              {% endif %}
+
                     {{ nav_link('logout_user', 'Sign Out') }}
             {% else %}
                     {{ nav_link('login_template', 'Sign IN') }}

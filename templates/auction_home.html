@@ -1,0 +1,42 @@
+
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+<img src="{{ url_for('file',filename=user['picture_name']) }}" style="height:100px; width:10%;">
+{% endblock %}
+{% block content %}
+<br/>
+<div class="container"><h3>Hello,<span style="color:blue"> {{ username }} </span></h3>
+
+<br/>
+    <br/>
+    <div class="row">
+    <div class="col-md-6">
+      <div class="thumbnail">
+        <a href="/auction">
+          <img src="static/img/office-2761159_1920.png" alt="Lights" style="width:100%;height:230px;">
+          <div class="caption">
+            <p class="text-center">Create A New Auction</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="thumbnail">
+        <a href="#">
+          <img src="static/img/market-2626658_1920.jpg" alt="Lights" style="width:100%;height:230px;">
+          <div class="caption">
+            <p class="text-center">Auction Details</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+<br/>
+</div>
+{% endblock %}

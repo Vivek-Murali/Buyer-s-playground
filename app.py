@@ -67,15 +67,26 @@ def register_user():
     gender = request.form['gender']
     phone = request.form['mobile']
     photo = request.files['file']
+    date  = request.form['date']
     likes = None
-    type = request.form['type']
-    status = 1
+    type = "1"
     bal = 0
-    mongo.save_file(photo.filename, photo)
+    status = 1
+    lo_time = datetime.datetime.now()
+    re_time = datetime.datetime.now()
+    filename = uuid4().hex + photo.filename
+    print(filename)
     picture = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
-    User.register(email, username, password, first_name, last_name, gender, phone, picture, photo.filename, likes, type,status,bal)
-    flash("Registered Successfully", category='success')
-    return render_template("register.html")
+    user = User.get_by_username(username)
+    emailval = User.get_by_email(email)
+    if user is not None or emailval is not None:
+        flash("Username or Email taken", category='warning')
+        return render_template("register.html")
+    else:
+        mongo.save_file(filename, photo)
+        User.register(email, username, password, first_name, last_name, gender, phone, picture, filename, likes, type,status,bal,date,lo_time,re_time)
+        flash("Registered Successfully", category='success')
+        return render_template("register.html")
 
 
 @app.route('/login')
@@ -87,6 +98,11 @@ def login_template():
 @app.route('/user_home')
 def user_home():
     return render_template('home.html', username=session['username'])
+
+
+@app.route('/req_auc')
+def req_auc():
+    return render_template('auction_req.html', username=session['username'])
 
 
 @app.route('/admin_home')
@@ -299,15 +315,19 @@ def login_user():
         return render_template("index_home.html")
 
     user = mongo.db.users.find_one_or_404({'username':username})
+    lo_time = datetime.datetime.now()
+    col1 = Database.DATABASE['users']
+    col1.update_one({"username": username},
+                    {"$set": {"last_login":lo_time}},
+                    upsert=False)
     print(user['type'])
+    session['type'] = user['type']
     if user['type'] == 2:
         return render_template("Admin_home.html", username=session['username'],user=user)
-    elif user['type'] == 3:
-        return render_template("home_auction.html", username=session['username'], user=user)
     elif user['type'] == 4:
         return render_template("home_logistic.html", username=session['username'], user=user)
-
-    return render_template("home.html", username=session['username'],user=user)
+    else:
+        return render_template("home.html", username=session['username'],user=user,)
 
 
 @app.route('/logout')
@@ -349,7 +369,27 @@ def new_post(username):
 
 @app.route('/auction')
 def auction_template():
-    render_template('auction.html', username=session['username'])
+    return render_template('auction.html', username=session['username'])
+
+
+@app.route('/auth_auction', methods=['POST'])
+def register_auction():
+    name = request.form['name']
+    username = request.form['username']
+    password = request.form['password']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    gender = request.form['gender']
+    phone = request.form['mobile']
+    photo = request.files['file']
+    likes = None
+    type = request.form['type']
+    status = 1
+    bal = 0
+    mongo.save_file(photo.filename, photo)
+    User.register(username, password, first_name, last_name, gender, phone, photo.filename, likes, type,status,bal)
+    flash("Registered Successfully", category='success')
+    return render_template("register.html")
 
 
 @app.route('/assets/<string:username>')
