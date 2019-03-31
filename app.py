@@ -20,6 +20,7 @@ import stripe
 
 app = Flask(__name__)  # '__main__'
 app.secret_key = "Hero"
+app.config['MONGO_DBNAME']="heroku_hnv16g8k"
 app.config['MONGO_URI']= "mongodb://jetfire:vivek95@ds043477.mlab.com:43477/heroku_hnv16g8k"
 mongo = PyMongo(app)
 #avatars = Avatars(app)
