@@ -323,6 +323,7 @@ def login_user():
                     upsert=False)
     print(user['type'])
     session['type'] = user['type']
+    session['status'] = user['status']
     if user['type'] == 2:
         return render_template("Admin_home.html", username=session['username'],user=user)
     elif user['type'] == 4:
@@ -371,6 +372,24 @@ def new_post(username):
 @app.route('/auction')
 def auction_template():
     return render_template('auction.html', username=session['username'])
+
+
+@app.route('/auction_req1', methods=['POST'])
+def auction_req_template():
+    des = request.form['description']
+    username = session['username']
+    user = mongo.db.users.find_one_or_404({'username': username})
+    type = user['type']
+    date_req = datetime.datetime.now()
+    col1 = Database.DATABASE['users']
+    col1.update_one({"username": username},
+                    {"$set": {"status":1}},
+                    upsert=False)
+    Database.insert('requests',{"username":username,"descriptions":des,"type":type, "date":date_req})
+    session['type'] = type
+    session['status'] = user['status']
+    print(session['status'])
+    return render_template('auction_req.html', username=session['username'])
 
 
 @app.route('/auth_auction', methods=['POST'])
