@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+<style>
+    .header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+.nav {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:300px;
+    width:100px;
+    float:left;
+    padding:5px;
+}
+.active {
+    font-weight:bold;
+}
+.section {
+    width:350px;
+    float:left;
+    padding:10px;
+}
+.footer {
+    background-color:black;
+    color:white;
+    clear:both;
+    text-align:center;
+    padding:5px;
+}
+</style>
+{% endblock %}
+{% block content %}
+<br>
+<div class="row" style="height:450px;">
+    <div class="col-xs-4" style="border-right:1px solid;">
+<div class="nav">
+    <ul style="list-style-type:none; font-size:24px; display:block;">
+        <li><h3>Requests</h3></li>
+        <li ><a href="#section-london" style="color:black;">Auction Requests</a></li>
+        <li ><a href="#section-paris" style="color:black;">Other Reports</a></li>
+    </ul>
+</div>
+    </div>
+     <div class="col-xs-8">
+<div id="section-london" class="tab-content">
+            <h3 style="text-align:center;">Requests</h3>
+            <div align="center">
+            <table align="center">
+                <tr><th style="text-align:center;">Username</th><th>&nbsp;</th><th style="text-align:center;">Description</th><th style="text-align:center;">Date</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Action</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Status</th></tr>
+            {% if posts|length > 0 %}
+            {% for post in posts %}
+                <tr><td style="text-align:center;"><b>{{ post.username}}</b></td><td>&nbsp;</td><td style="text-align:center;"><p>{{post.descriptions}}</p></td><td style="text-align:center;"><b>{{post.date}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><a href="/accept_req/{{post.username}}" style="color:green;"><b>Accept</b></a>&nbsp;&nbsp;<a href="#" style="color:red;"><b>Reject</b></a></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.status}}</b></td></tr>&nbsp;&nbsp;
+                {% endfor %}
+                {% else %}
+            {% endif %}
+            </table></div>
+</div>
+<div id="section-paris" class="tab-content">
+    <h2>Paris</h2>
+    <p>Paris, France's capital, is a major European city and a global center for art, fashion, gastronomy and culture. Its picturesque 19th-century cityscape is crisscrossed by wide boulevards and the River Seine. </p>
+</div>
+</div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+    $('.nav ul li:first').addClass('active');
+    $('.tab-content:not(:first)').hide();
+    $('.nav ul li a').click(function (event) {
+        event.preventDefault();
+        var content = $(this).attr('href');
+        $(this).parent().addClass('active');
+        $(this).parent().siblings().removeClass('active');
+        $(content).show();
+        $(content).siblings('.tab-content').hide();
+    });
+});
+</script>
+{% endblock %}
+

@@ -13,6 +13,7 @@ from flask_pymongo import PyMongo
 from models.blockchain import Blockchain
 from models.ass_blockchain import AssetsBlockchain
 from uuid import uuid4
+import pymongo
 from models.announcement import Anno
 import qrcode
 import stripe
@@ -73,8 +74,8 @@ def register_user():
     type = "1"
     bal = 0
     status = 1
-    lo_time = datetime.datetime.now()
-    re_time = datetime.datetime.now()
+    lo_time = datetime.datetime.utcnow()
+    re_time = datetime.datetime.utcnow()
     filename = uuid4().hex + photo.filename
     print(filename)
     picture = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
@@ -87,7 +88,7 @@ def register_user():
         mongo.save_file(filename, photo)
         User.register(email, username, password, first_name, last_name, gender, phone, picture, filename, likes, type,status,bal,date,lo_time,re_time)
         flash("Registered Successfully", category='success')
-        return render_template("register.html")
+        return render_template("login.html")
 
 
 @app.route('/login')
@@ -312,11 +313,12 @@ def login_user():
     if User.login_valid(username, password):
         User.login(username)
     else:
+        flash("Incorrect Username or Password ", category='danger')
         session['username'] = None
-        return render_template("index_home.html")
+        return render_template("login.html")
 
     user = mongo.db.users.find_one_or_404({'username':username})
-    lo_time = datetime.datetime.now()
+    lo_time = datetime.datetime.utcnow()
     col1 = Database.DATABASE['users']
     col1.update_one({"username": username},
                     {"$set": {"last_login":lo_time}},
@@ -346,6 +348,26 @@ def file(filename):
 @app.route('/anno')
 def anno():
     return render_template('anno.html')
+
+
+@app.route('/admin_request')
+def admin_req():
+    posts = [post for post in
+     Database.find(collection='requests', query={}).sort('date_posted', pymongo.DESCENDING)]
+    return render_template('admin_auction.html', posts=posts, username=session['username'])
+
+
+@app.route('/accept_req/<string:username>')
+def accept_req(username):
+    col1 = Database.DATABASE['requests']
+    col1.update_one({"username": username},
+                    {"$set": {"status": "Approved"}},
+                    upsert=False)
+    col2 = Database.DATABASE['users']
+    col2.update_one({"username": username},
+                    {"$set": {"type": "3"}},
+                    upsert=False)
+    return make_response(admin_home())
 
 
 @app.route('/view_user_all/<string:username>')
@@ -378,18 +400,24 @@ def auction_template():
 def auction_req_template():
     des = request.form['description']
     username = session['username']
-    user = mongo.db.users.find_one_or_404({'username': username})
+    user = Database.find_one('users', {'username': username})
     type = user['type']
-    date_req = datetime.datetime.now()
+    date_req = datetime.datetime.utcnow()
     col1 = Database.DATABASE['users']
     col1.update_one({"username": username},
                     {"$set": {"status":1}},
                     upsert=False)
-    Database.insert('requests',{"username":username,"descriptions":des,"type":type, "date":date_req})
-    session['type'] = type
-    session['status'] = user['status']
-    print(session['status'])
-    return render_template('auction_req.html', username=session['username'])
+    req_check = Database.find_one('requests', {'username': username})
+    if req_check is not None:
+        session['status'] = user['status']
+        return render_template('auction_req.html', username=session['username'])
+    else:
+        Database.insert('requests',{"username":username,"descriptions":des,"type":type, "date":date_req})
+        session['type'] = type
+        session['status'] = user['status']
+        print(session['status'])
+        flash("Requested Successfully", category='success')
+        return render_template('home.html', username=session['username'])
 
 
 @app.route('/auth_auction', methods=['POST'])
@@ -525,4 +553,4 @@ def full_chain():
 
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    app.run(port=5003, debug=True)
