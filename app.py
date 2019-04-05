@@ -83,12 +83,12 @@ def register_user():
     emailval = User.get_by_email(email)
     if user is not None or emailval is not None:
         flash("Username or Email taken", category='warning')
-        return render_template("register.html")
+        return make_response(register_template())
     else:
         mongo.save_file(filename, photo)
         User.register(email, username, password, first_name, last_name, gender, phone, picture, filename, likes, type,status,bal,date,lo_time,re_time)
         flash("Registered Successfully", category='success')
-        return render_template("login.html")
+        return make_response(login_template())
 
 
 @app.route('/login')
@@ -337,7 +337,7 @@ def login_user():
 @app.route('/logout')
 def logout_user():
     User.logout()
-    return render_template('index_home.html')
+    return make_response(index_template())
 
 
 @app.route('/file/<filename>')
@@ -417,27 +417,7 @@ def auction_req_template():
         session['status'] = user['status']
         print(session['status'])
         flash("Requested Successfully", category='success')
-        return render_template('home.html', username=session['username'])
-
-
-@app.route('/auth_auction', methods=['POST'])
-def register_auction():
-    name = request.form['name']
-    username = request.form['username']
-    password = request.form['password']
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    gender = request.form['gender']
-    phone = request.form['mobile']
-    photo = request.files['file']
-    likes = None
-    type = request.form['type']
-    status = 1
-    bal = 0
-    mongo.save_file(photo.filename, photo)
-    User.register(username, password, first_name, last_name, gender, phone, photo.filename, likes, type,status,bal)
-    flash("Registered Successfully", category='success')
-    return render_template("register.html")
+        return make_response(user_home())
 
 
 @app.route('/assets/<string:username>')
