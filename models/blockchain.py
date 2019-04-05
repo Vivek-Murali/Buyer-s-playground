@@ -1,8 +1,6 @@
 import json
 from time import time
 import hashlib
-from uuid import uuid4
-from common.database import Database
 
 
 class Blockchain(object):

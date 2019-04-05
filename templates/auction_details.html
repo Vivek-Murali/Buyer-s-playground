@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    <h2 align="center" style="text-aline:center; font-family: Rockwell">{{ username }}'s Items in for Auction</h2>&nbsp;
+    <br>
+     {% if posts|length > 0 %}
+            {% for post in posts %}
+        <div class="col-md-9 col-md-offset-1 well" style="background-color: white">
+            <img src="{{url_for('file',filename=post.image)}}" class="rounded float-left" alt="Lights" style="height:250px;width:100%;">
+            <p style="color: dodgerblue">Commodity Name: {{post.commodity_name}}&nbsp;&nbsp;&nbsp;<span style="color:black; font-size:15pt; font-style:solid">Commodity Value:</span> {{post.commodity_value}}</p>
+                <p><span style="color:black; font-size:10pt; font-style:solid">Description:</span>&nbsp;{{ post.description}}</p>
+                <p><span style="color:black; font-size:15pt; font-style:solid">Quantity:</span>&nbsp;{{post.quantity}} Kgs&nbsp;&nbsp;&nbsp;<span style="color:black; font-size:15pt; font-style:solid">Price:</span>&nbsp;{{post.price}}/-<span style="color:black; font-size:15pt; font-style:solid">&nbsp;&nbsp;&nbsp;Number of Bids:</span>&nbsp;{{post.bids | count}}</p>
+                <p><span style="color:black; font-size:10pt; font-style:solid">Date Posted:</span>&nbsp;{{post.created_date}}</p>
+
+            </div>
+
+
+
+
+                {% endfor %}
+                {% else %}
+            <h4 class="text-center">There aren't any posts yet!</h4>
+                {% endif %}
+</div>
+{% endblock %}

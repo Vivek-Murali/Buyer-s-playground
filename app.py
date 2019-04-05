@@ -2,20 +2,18 @@ __author__ = 'Jetfire'
 
 
 from flask import Flask, render_template, request, session, make_response, flash, jsonify
-from flask_paginate import Pagination, get_page_args
-#from flask_avatars import Avatars
+from flask_mail import Mail,Message
 import hashlib
 import datetime
-import base64
 from models.users import User
 from common.database import Database
 from flask_pymongo import PyMongo
 from models.blockchain import Blockchain
 from models.ass_blockchain import AssetsBlockchain
+from models.auction import Auction
 from uuid import uuid4
 import pymongo
 from models.announcement import Anno
-import qrcode
 import stripe
 
 
@@ -23,6 +21,16 @@ app = Flask(__name__)  # '__main__'
 app.secret_key = "Hero"
 app.config['MONGO_DBNAME']="heroku_hnv16g8k"
 app.config['MONGO_URI']= "mongodb://jetfire:vivek95@ds043477.mlab.com:43477/heroku_hnv16g8k"
+mail_settings = {
+        "MAIL_SERVER":'smtp.gmail.com',
+        "MAIL_USE_TLS":False,
+        "MAIL_USE_SSL":True,
+        "MAIL_PORT":465,
+        "MAIL_USERNAME":'007ottaku@gmail.com',
+        "MAIL_PASSWORD":'77588870'
+}
+app.config.update(mail_settings)
+mail = Mail(app)
 mongo = PyMongo(app)
 #avatars = Avatars(app)
 BASECOORD = [22.3511148, 78.6677428]
@@ -77,7 +85,6 @@ def register_user():
     lo_time = datetime.datetime.utcnow()
     re_time = datetime.datetime.utcnow()
     filename = uuid4().hex + photo.filename
-    print(filename)
     picture = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
     user = User.get_by_username(username)
     emailval = User.get_by_email(email)
@@ -154,7 +161,6 @@ def user_profile(username):
 @app.route('/edit_profile', methods=['POST'])
 def edit_man():
         picture1 = session['picture']
-        print(picture1)
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         gender = request.form['gender']
@@ -228,8 +234,7 @@ def charge():
                     upsert=False)
     flash("Added Successfully", category='success')
 
-    return render_template('home.html', amount=amount,username=session['username'],
-                           picture=session['picture'])
+    return make_response(user_profile(username))
 
 
 @app.route('/insurance')
@@ -258,10 +263,8 @@ def insurance_template_all():
     if name == 'All':
         lists = [post for post in
                  Database.find(collection='insurance', query={})]
-        print(lists)
     else:
         lists = [post for post in Database.find(collection='insurance', query={'name': name})]
-        print(lists)
     return render_template("list-insurance.html", username=session['username'], lists=lists)
 
 
@@ -271,17 +274,14 @@ def user_template_all():
     if name == 'All':
         lists = [post for post in
                  Database.find(collection='users', query={})]
-        print(lists)
     else:
         lists = [post for post in Database.find(collection='users', query={'username': name})]
-        print(lists)
     return render_template("all_users.html", username=session['username'], lists=lists)
 
 
 @app.route('/edit_profile_admin', methods=['POST'])
 def edit_man_admin():
         picture1 = session['picture']
-        print(picture1)
         first_name = request.form['first_name']
         last_name = request.form['last_name']
         gender = request.form['gender']
@@ -313,25 +313,31 @@ def login_user():
     if User.login_valid(username, password):
         User.login(username)
     else:
-        flash("Incorrect Username or Password ", category='danger')
-        session['username'] = None
-        return render_template("login.html")
+        u = Database.find_one('users', {'username':username})
+        with app.app_context():
+            msg = Message(sender=app.config.get("MAIL_USERNAME"),recipients=[u['email']])
+            msg.subject = "Buysplyground Authentication Error"
+            msg.body = """Someone tried to login"""
+            mail.send(msg)
+            flash("Incorrect Username or Password ", category='danger')
+            session['username'] = None
+        return make_response(login_template())
 
     user = mongo.db.users.find_one_or_404({'username':username})
-    lo_time = datetime.datetime.utcnow()
+    lo_time1 = datetime.datetime.utcnow()
+    lo_time = lo_time1.ctime()
     col1 = Database.DATABASE['users']
     col1.update_one({"username": username},
                     {"$set": {"last_login":lo_time}},
                     upsert=False)
-    print(user['type'])
     session['type'] = user['type']
     session['status'] = user['status']
     if user['type'] == 2:
-        return render_template("Admin_home.html", username=session['username'],user=user)
+        return render_template("Admin_home.html", username=session['username'], user=user)
     elif user['type'] == 4:
         return render_template("home_logistic.html", username=session['username'], user=user)
     else:
-        return render_template("home.html", username=session['username'],user=user,)
+        return render_template("home.html", username=session['username'], user=user,)
 
 
 @app.route('/logout')
@@ -396,6 +402,45 @@ def auction_template():
     return render_template('auction.html', username=session['username'])
 
 
+@app.route('/auction_home')
+def auction_home_template():
+    return render_template('auction_home.html', username=session['username'])
+
+
+@app.route('/auction_create', methods=['POST'])
+def auction_create():
+    commodity_name = request.form['comname']
+    username = session['username']
+    com = Database.find_one('products', {'commodity': commodity_name})
+    commodity_val = com['value']
+    quantity = request.form['Quantity']
+    price = request.form['price']
+    current_bid = 0
+    bids = []
+    description = request.form['description']
+    date = datetime.datetime.now()
+    date = date.strftime('%d-%m-%y')
+    image = request.files['image']
+    filename = uuid4().hex + image.filename
+    mongo.save_file(filename, image)
+    Auction.create_new(username,commodity_name,commodity_val,quantity,price,current_bid,bids,description,filename,date)
+    flash("Created Successfully", category='success')
+    return make_response(auction_home_template())
+
+
+@app.route('/auctions/<string:username>')
+@app.route('/auctions')
+def auctions(username):
+    if username is not None:
+        user = User.get_by_username(username)
+    else:
+        user = User.get_by_username(session['username'])
+        auction_list = Database.find("auction", {'username': user.username})
+    posts = [post for post in
+                mongo.db.auction.find({'username': user.username}, {'_id': False})]
+    return render_template("auction_details.html", username=user.username, posts=posts)
+
+
 @app.route('/auction_req1', methods=['POST'])
 def auction_req_template():
     des = request.form['description']
@@ -415,7 +460,6 @@ def auction_req_template():
         Database.insert('requests',{"username":username,"descriptions":des,"type":type, "date":date_req})
         session['type'] = type
         session['status'] = user['status']
-        print(session['status'])
         flash("Requested Successfully", category='success')
         return make_response(user_home())
 
@@ -446,7 +490,6 @@ def create_new_asset():
         description = request.form['description']
         file1 = request.files['file']
         user = User.get_by_username(session['username'])
-        print(user)
         values = AssetsBlockchain.json(user.username,user._id,file1.filename,description)
         # Check that the required fields are in the POST'ed data
         required = ['username', 'user_id','filename','description']
@@ -454,7 +497,8 @@ def create_new_asset():
             return 'Missing values', 400
         Database.insert('Assets', values)
         # Create a new Transaction
-        index = ablockchain.new_transaction_asset(values['username'], values['user_id'],values['filename'],values['description'])
+        index = ablockchain.new_transaction_asset(values['username'], values['user_id'],
+                                                  values['filename'], values['description'])
         response = {'message': f'Transaction will be added to Block {index}'}
         result = jsonify(response)
         last_block = ablockchain.last_block
@@ -466,7 +510,7 @@ def create_new_asset():
         block = ablockchain.new_block(proof, previous_hash)
 
         response = {
-            'node_id':node_identifier,
+            'node_id': node_identifier,
             'message': "New Block Forged",
             'index': block['index'],
             'transactions': block['transactions'],

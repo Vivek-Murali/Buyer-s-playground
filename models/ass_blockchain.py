@@ -2,7 +2,6 @@ import json
 from time import time
 import hashlib
 from common.database import Database
-import pymongo
 
 
 class AssetsBlockchain(object):
