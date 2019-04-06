@@ -139,6 +139,11 @@ class Auction(object):
                 Database.find(collection='Bids', query=({'transactions.username': username},{'transactions':True}))]
 
     @staticmethod
+    def from_all_auction():
+        return [post for post in
+                Database.find(collection='auction', query=({}))]
+
+    @staticmethod
     def from_user_profile(username):
         return [post for post in
                 Database.find(collection='users', query={'username': username})]

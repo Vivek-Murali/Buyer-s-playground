@@ -407,6 +407,12 @@ def auction_home_template():
     return render_template('auction_home.html', username=session['username'])
 
 
+@app.route('/bid_home')
+def bid_home_template():
+    posts = Auction.from_all_auction()
+    return render_template('biding_area.html', username=session['username'], posts=posts)
+
+
 @app.route('/auction_create', methods=['POST'])
 def auction_create():
     commodity_name = request.form['comname']
