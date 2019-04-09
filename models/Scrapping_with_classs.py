@@ -16,7 +16,9 @@ driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, chrome_options=chro
 import pandas as pd
 from common.database import Database
 import json
+import os
 from selenium import webdriver
+from selenium.webdriver import ChromeOptions
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
@@ -28,11 +30,11 @@ class Check(object):
     
     @staticmethod
     def check(month,year,comm_val):
-        chrome_options = Options()
-        chrome_options.binary_location = GOOGLE_CHROME_BIN
+        chrome_options = ChromeOptions()
+        chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('--no-sandbox')
-        driver = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH, chrome_options=chrome_options)
+        driver = webdriver.Chrome(executable_path= os.environ['CHROMEDRIVER_PATH'], chrome_options=chrome_options)
         '''
         hh = webdriver.ChromeOptions()
         hh.add_argument("headless")

@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2f47ccde-a4f0-4e78-8703-ed4e50b70ad1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/templates/fetch_data.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/common/database.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/Scrapping_with_classs.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/Scrapping_with_classs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/pip-selfcheck.json" beforeDir="false" afterPath="$PROJECT_DIR$/venv/pip-selfcheck.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -33,8 +29,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/models/Scrapping_with_classs.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="223">
-              <caret line="38" column="95" selection-start-line="38" selection-start-column="95" selection-end-line="38" selection-end-column="95" />
+            <state relative-caret-position="90">
+              <caret line="36" column="81" selection-start-line="36" selection-start-column="81" selection-end-line="36" selection-end-column="81" />
               <folding>
                 <element signature="e#386#405#0" expanded="true" />
               </folding>
@@ -43,10 +39,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/common/database.py">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" column="49" selection-start-line="20" selection-start-column="49" selection-end-line="20" selection-end-column="49" />
+            <state relative-caret-position="285">
+              <caret line="19" column="11" lean-forward="true" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
             </state>
           </provider>
         </entry>
@@ -195,11 +191,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="4">
-    <option name="x" value="683" />
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="y" value="30" />
-    <option name="width" value="683" />
-    <option name="height" value="738" />
+    <option name="width" value="1091" />
+    <option name="height" value="537" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -335,18 +330,18 @@
     <frame x="0" y="30" width="1366" height="738" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2271035" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2271035" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32840723" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4988831" visible="true" weight="0.25779969" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4988831" weight="0.25779969" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39901477" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" sideWeight="0.4996277" weight="0.3295082" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32587063" />
+      <window_info anchor="bottom" id="Terminal" order="8" visible="true" weight="0.32512316" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.50111693" side_tool="true" weight="0.3295082" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32840723" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -474,13 +469,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="555">
           <caret line="53" column="89" selection-start-line="53" selection-start-column="89" selection-end-line="53" selection-end-column="89" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="16" selection-start-line="19" selection-start-column="16" selection-end-line="19" selection-end-column="16" />
         </state>
       </provider>
     </entry>
@@ -775,6 +763,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="19" column="11" lean-forward="true" selection-start-line="19" selection-start-column="11" selection-end-line="19" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -787,8 +782,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/models/Scrapping_with_classs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="223">
-          <caret line="38" column="95" selection-start-line="38" selection-start-column="95" selection-end-line="38" selection-end-column="95" />
+        <state relative-caret-position="90">
+          <caret line="36" column="81" selection-start-line="36" selection-start-column="81" selection-end-line="36" selection-end-column="81" />
           <folding>
             <element signature="e#386#405#0" expanded="true" />
           </folding>
