@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>Request Data</h2>&nbsp;
+    <br>
+
+     <form  id="new-blog" action="/fetch_data" method="post" enctype="multipart/form-data">
+        <div class="form-group row">
+        <div class="col-xs-4">
+         <div class="form-group">
+            <label for="year">Year</label>
+            <input type="text" id="year" class="form-control" name="year">
+        </div>
+        </div>
+         <div class="col-xs-4">
+        <div  class="form-group">
+            <label for="month">Month</label>
+            <select class="form-control" id="month" name="month">
+                <option value="0" selected>Select a Value</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+
+</select>
+        </div>
+         </div>
+            <div class="col-xs-4">
+            <div class="form-group">
+              <label for="comname">Name of the Commodity</label>
+        	<select class="form-control" id="comname" name="comname">
+                <option value="0" selected>Select a Value</option>
+                <option value="Sugarcane">Sugarcane</option>
+                <option value="Jaggery">Jaggery</option>
+                <option value="Carrot">Carrot</option>
+                <option value="Cabbage">Cabbage</option>
+                <option value="Apple">Apple</option>
+</select>
+        </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+<br>
+</div>
+{% endblock %}

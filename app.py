@@ -11,6 +11,8 @@ from flask_pymongo import PyMongo
 from models.blockchain import Blockchain
 from models.ass_blockchain import AssetsBlockchain
 from models.auction import Auction
+from models.Scrapping_with_classs import Check
+from selenium.common.exceptions import WebDriverException
 from uuid import uuid4
 import pymongo
 from models.announcement import Anno
@@ -445,6 +447,27 @@ def auctions(username):
     posts = [post for post in
                 mongo.db.auction.find({'username': user.username}, {'_id': False})]
     return render_template("auction_details.html", username=user.username, posts=posts)
+
+
+@app.route('/fetch_temp')
+def fetch_home():
+    return render_template('fetch_data.html', username=session['username'])
+
+
+@app.route('/fetch_data', methods=['POST'])
+def fetch_data():
+    commodity_name = request.form['comname']
+    month = request.form['month']
+    com = Database.find_one('products', {'commodity': commodity_name})
+    commodity_val = str(com['value'])
+    print(type(commodity_val))
+    year = request.form['year']
+    try:
+        Check.check(month,year,commodity_val)
+    except WebDriverException:
+        pass
+    flash("Data Pushed Successfully", category='success')
+    return make_response(admin_home())
 
 
 @app.route('/auction_req1', methods=['POST'])

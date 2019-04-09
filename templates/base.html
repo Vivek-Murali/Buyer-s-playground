@@ -79,6 +79,7 @@
                     <li><a href="/User_profile/{{ username }}">{{username}}</a></li>
               {% if session['username'] == 'Admin' %}
               <li><a href="/admin_request">Requests & Reports</a></li>
+              <li><a href="/fetch_temp">Data Request</a></li>
               {% else %}
               {% if session['type'] == "3" %}
                <li><a href="/auction_home">Auctions</a></li>
