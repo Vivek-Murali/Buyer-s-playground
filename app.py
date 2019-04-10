@@ -415,6 +415,70 @@ def bid_home_template():
     return render_template('biding_area.html', username=session['username'], posts=posts)
 
 
+@app.route('/bids', methods=['POST'])
+def bid():
+    username = request.form['username']
+    auction_id = request.form['auctionId']
+    col1 = Database.DATABASE['auction']
+    col2 = Database.DATABASE['users']
+    a = Database.find_one(collection='auction', query={'_id':auction_id})
+    b = Database.find_one(collection='users',query={'username':username})
+    current = int(a['price'])
+    if a['bids'][0] == username:
+        flash("Already place the bid", category='danger')
+        return make_response(bid_home_template())
+    else:
+        if b['bal'] <= current:
+            flash("Low Balance fill your balance to ake a transaction", category='danger')
+            return make_response(user_profile(username))
+        else:
+            col1.update_one({"_id": auction_id},
+                    {"$push": {"bids": username}},
+                    upsert=False)
+            if a['current_bid'] == 0:
+                col1.update_one({"_id": auction_id},
+                    {"$set": {"current_bid": current}},
+                    upsert=False)
+            else:
+                if a['current_bid'] <= 10000:
+                    col1.update_one({"_id": auction_id},
+                        {"$inc": {"current_bid": 50}},
+                        upsert=False)
+                elif a['current_bid']>10000 or a['current_bid'] <= 20000:
+                    col1.update_one({"_id": auction_id},
+                                    {"$inc": {"current_bid": 100}},
+                                    upsert=False)
+                else:
+                    col1.update_one({"_id": auction_id},
+                                    {"$inc": {"current_bid": 200}},
+                                    upsert=False)
+            a = Database.find_one(collection='auction', query={'_id': auction_id})
+            if a['bids'][0] == username:
+                c = Database.find_one(collection='auction', query={'_id': auction_id})
+                col2.update_one({"username": username},
+                        {"$inc": {"bal": -c['current_bid']}},
+                        upsert=False)
+            else:
+                d = Database.find_one(collection='auction', query={'_id': auction_id})
+                ball = int(d['current_bid'])- 50
+                col2.update_one({"username": username},
+                            {"$inc": {"bal": ball}},
+                            upsert=False)
+            a = Database.find_one(collection='auction', query={'_id': auction_id})
+            date = datetime.datetime.now()
+            date = date.strftime('%d-%m-%y %H:%M')
+            Database.insert('bid',{'username':username,'auction_id':auction_id,'current_bid':a['current_bid'],'bid_time':date})
+            flash("Bid Successfully", category='success')
+            user1 = a['bids'][1]
+            u = Database.find_one('users',{'username':user1})
+            with app.app_context():
+                msg = Message(sender=app.config.get("MAIL_USERNAME"), recipients=[u['email']])
+                msg.subject = "Buysplyground Auction Update"
+                msg.body = """Your Bid has been Outbid please login to place a bid"""
+                mail.send(msg)
+    return make_response(bid_home_template())
+
+
 @app.route('/auction_create', methods=['POST'])
 def auction_create():
     commodity_name = request.form['comname']

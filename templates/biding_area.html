@@ -6,34 +6,42 @@
 {% block page %}{{title}}{% endblock %}
 {% block heading %}
   {{ super() }}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+    .modal{
+    top:50%;
+    left:20%;
+    }
+</style>
 {% endblock %}
 {% block content %}
 <div class="container">
     <br>
     <h2 align="center" style="text-aline:center; font-family: Rockwell">Auction Items</h2>&nbsp;
-
     <br>
      {% if posts|length > 0 %}
             {% for post in posts %}
      <div class="col-md-9 col-md-offset-1 well" style="background-color: white">
-       <form  action="/auth_register" method="post" enctype="multipart/form-data">
+       <form  action="/bids" method="post" enctype="multipart/form-data">
             Only <i class="fa fa-clock-o" style="font-size:24px"></i> <span id='time'></span> left!
             <input type="hidden" id="auctionId" name="auctionId" value="{{post._id}}">
             <input type="hidden" id="username" name="username" value="{{username}}">
            <p><span style="color:blue; font-size:15pt; font-style:solid">Commodity Name:&nbsp;{{post.commodity_name}}</span><br><br>
                 <img src="{{url_for('file',filename=post.image)}}" class="rounded float-left" alt="Lights" style="height:100px;width:100px;">
-               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Commodity Value:&nbsp;{{post.commodity_value}}</span><br>
-               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Description:&nbsp;{{ post.description}}</span><br>
-               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Quantity:&nbsp;{{post.quantity}} Kgs</span>&nbsp;&nbsp;&nbsp;<span style="color:black; font-size:12pt; font-style:solid">Price:&nbsp;{{post.price}}/-</span><br>
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Commodity Value:&nbsp;{{post.commodity_value}}</span> <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Current Bid by:&nbsp;{{post.bids[-1]}}</span><br>
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Description:&nbsp;{{ post.description}}</span><span style="color:black; font-size:12pt; font-style:solid" class="text-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Current Bid:&nbsp;{{post.current_bid}}</span><br>
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Quantity:&nbsp;{{post.quantity}} Kgs</span>&nbsp;&nbsp;&nbsp;<span style="color:black; font-size:12pt; font-style:solid">Price:&nbsp;Rs {{post.price}}/-</span><br>
                <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Number of Bids:&nbsp;&nbsp;{{post.bids | count}}</span><br>
                <span style="color:black; font-size:11pt; font-style:solid">&nbsp;&nbsp;Date Posted:&nbsp;{{post.created_date}}</span></p>
+
                 {% if post.username == username %}
 
                       {% else %}
-                <button type="button" id="Button" class="btn">Bid</button>
+                <button  id="Button" class="btn" data-toggle="modal" data-target="#myModal">Bid</button>
                 {% endif %}
-
-
 
 
 
@@ -45,13 +53,15 @@
           </form> </div>
 
 </div>
+
+
 <script>
 
 (function() {
   var start = new Date;
   var end = new Date;
   start.setHours(15, 0, 0);
-  end.setHours(19,2,0);
+  end.setHours(23,2,0);
 
   function pad(num) {
     return ("0" + parseInt(num)).substr(-2);
