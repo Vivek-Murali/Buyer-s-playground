@@ -896,19 +896,20 @@ def plot():
 
     b = db.test2.find()
     data2 = pd.DataFrame(list(b))
+    print(data2)
     data2['Arrival Date'] = pd.to_datetime(data2['Arrival Date'], format="%d/%m/%Y")
+    data2['Arrival Date'] = data2['Arrival Date'].dt.date
+    print(data2['Arrival Date'])
     source1 = bokeh.plotting.ColumnDataSource(
-        data={'x': data2['Arrival Date'], 'y': data2['Modal Price']})
+        data={'x': data2['Arrival Date'], 'y': data2['Modal Price'],'desc':data1['commodity']})
     TOOLTIPS = [
-        ('Date', "@x"),
         ('Price', '@y'),
     ]
     hover = HoverTool(
         tooltips=TOOLTIPS,
     )
-    p = figure(y_axis_label='price', x_axis_label='date', plot_width=1200, plot_height=200, )
+    p = figure(y_axis_label='price', x_axis_label='date', plot_width=1200, plot_height=200,x_axis_type='datetime' )
     p.add_tools(hover)
-    data2['Arrival Date']=pd.to_datetime(data2['Arrival Date'],format="%d/%m/%Y")
     x = data2['Arrival Date']
     y = data2['Modal Price']
     p.line(x,y)
