@@ -175,7 +175,16 @@ def list_insurance_temp():
 @app.route('/User_profile/<string:username>')
 def user_profile(username):
     users = User.from_user_profile(username)
-    return render_template('user_profile.html', username=session['username'], users=users)
+    posts = TransactionBlockchain.from_user_topic(username)
+    return render_template('user_profile.html', username=session['username'], users=users, posts=posts)
+
+
+@app.route('/Admin_profile/<string:username>')
+def admin_profile(username):
+    users = User.from_user_profile(username)
+    posts = [post for post in
+             Database.find(collection='requests', query={}).sort('date_posted', pymongo.DESCENDING)]
+    return render_template('admin_profile.html', username=session['username'], users=users, posts=posts)
 
 
 @app.route('/edit_profile', methods=['POST'])
@@ -187,13 +196,20 @@ def edit_man():
         phone = request.form['mobile']
         username = session['username']
         photo = request.files['file']
+        filename = uuid4().hex + photo.filename
         col1 = Database.DATABASE['users']
-        mongo.save_file(photo.filename, photo)
         col1.update_one({"username": username},
                         {"$set": {"first_name": first_name, "last_name": last_name, "gender": gender, "phone": phone, "picture_name":photo.filename}},
                         upsert=False)
+        mongo.save_file(filename, photo)
         flash("Edited Successfully", category='success')
-        return render_template('home.html', username=session['username'], picture =session['picture'])
+        user = mongo.db.users.find_one({'username': username})
+        if user['type'] == 2:
+            return make_response(admin_home(username))
+        elif user['type'] == 4:
+            return render_template("home_logistic.html", username=session['username'], user=user)
+        else:
+            return make_response(user_home(username))
 
 
 @app.route('/edit_profile2')
@@ -226,6 +242,8 @@ def charge():
     exp_year = request.form['expYear']
     cvv_no = request.form['cvv']
     des = "Added Money to Wallet"
+    lo_time1 = datetime.datetime.now()
+    lo_time = lo_time1.strftime('%d-%m-%y %H:%M')
     token = stripe.Token.create(
         card={
             "number": card_number,
@@ -246,8 +264,9 @@ def charge():
         currency='inr',
         description='Flask Charge'
     )
-    Database.insert('Transaction_Normal', {"token_id": token, "username": username, "email": user['email'], "amount": amount,
-                                    "description": des})
+    Database.insert('Transaction_Normal',
+                    {"token_id": token, "username": username, "email": user['email'], "amount": amount,
+                     "description": des, "date": lo_time})
     col1 = Database.DATABASE['users']
     col1.update_one({"username": username},
                     {"$inc": {"bal":amount}},
@@ -407,7 +426,9 @@ def anno():
 def admin_req():
     posts = [post for post in
      Database.find(collection='requests', query={}).sort('date_posted', pymongo.DESCENDING)]
-    return render_template('admin_auction.html', posts=posts, username=session['username'])
+    posts1 = [post for post in
+     Database.find(collection='auction', query={}).sort('created_date', pymongo.DESCENDING)]
+    return render_template('admin_auction.html', posts=posts,posts1=posts1 ,username=session['username'])
 
 
 @app.route('/accept_req/<string:username>')
@@ -423,10 +444,25 @@ def accept_req(username):
     return make_response(admin_home())
 
 
-@app.route('/view_user_all/<string:username>')
-def user_post(username):
-    posts = Anno.from_all_topic()
-    return render_template('anno.html', posts=posts,
+@app.route('/accept_bid/<string:username>')
+def accept_bid(username):
+    auc = mongo.db.auction.find_one({'username': username})
+    col1 = Database.DATABASE['auction']
+    col1.update_one({"_id": auc['_id']},
+                    {"$set": {"status": "Approved"}},
+                    upsert=False)
+    col2 = Database.DATABASE['users']
+    col2.update_one({"username": username},
+                    {"$inc": {"bal": auc['current_bid']}},
+                    upsert=False)
+    return make_response(admin_home())
+
+
+@app.route('/view_user_all/')
+def user_post():
+    posts = Anno.from_all_noraml()
+    posts1 = Anno.from_all_admin()
+    return render_template('anno.html', posts=posts, posts1=posts1,
                            username=session['username'])
 
 
@@ -438,7 +474,11 @@ def new_post(username):
         message = request.form['content']
         user = User.get_by_username(session['username'])
         likes = "0"
-        new_post = Anno(message, user.username, user.picture_name, likes)
+        if username == 'Admin':
+            annotype = "Admin"
+        else:
+            annotype = 'Normal'
+        new_post = Anno(message, user.username, user.picture_name, likes, annotype)
         new_post.save_to_mongo()
         username = session['username']
         return make_response(user_post(username))
@@ -532,6 +572,7 @@ def bid():
                 msg.body = """Your Bid has been Outbid please login to place a bid"""
                 mail.send(msg)
     return make_response(bid_home_template())
+
 
 
 @app.route('/auction_create', methods=['POST'])
@@ -848,13 +889,32 @@ def fetch_data():
     return make_response(admin_home())
 
 
+@app.route('/other_req', methods=['POST'])
+def other_req_template():
+    des = request.form['description']
+    username = session['username']
+    user = Database.find_one('users', {'username': username})
+    type = user['type']
+    anno_type = "Others"
+    date_req = datetime.datetime.now()
+    date_req = date_req.strftime('%d-%m-%y %H:%M')
+    req_type = 2
+    Database.insert('requests',{"username":username,"descriptions":des,"type":type, "anno_type":anno_type,"date":date_req,'request_type':req_type})
+    session['type'] = type
+    session['status'] = user['status']
+    flash("Requested Successfully", category='success')
+    return make_response(user_home())
+
+
 @app.route('/auction_req1', methods=['POST'])
 def auction_req_template():
     des = request.form['description']
     username = session['username']
     user = Database.find_one('users', {'username': username})
     type = user['type']
-    date_req = datetime.datetime.utcnow()
+    date_req = datetime.datetime.now()
+    date_req = date_req.strftime('%d-%m-%y %H:%M')
+    req_type = 1
     col1 = Database.DATABASE['users']
     col1.update_one({"username": username},
                     {"$set": {"status":1}},
@@ -864,11 +924,18 @@ def auction_req_template():
         session['status'] = user['status']
         return render_template('auction_req.html', username=session['username'])
     else:
-        Database.insert('requests',{"username":username,"descriptions":des,"type":type, "date":date_req})
+        Database.insert('requests',{"username":username,"descriptions":des,"type":type, "date":date_req,'request_type':req_type})
         session['type'] = type
         session['status'] = user['status']
         flash("Requested Successfully", category='success')
         return make_response(user_home())
+
+
+@app.route('/transblock')
+def transblock_template():
+    response = TransactionBlockchain.full_trans_chain()
+    posts = TransactionBlockchain.from_user_all()
+    return render_template('transblock.html', username=session['username'], response=response, posts=posts)
 
 
 @app.route('/plot')
@@ -901,7 +968,7 @@ def plot():
     data2['Arrival Date'] = data2['Arrival Date'].dt.date
     print(data2['Arrival Date'])
     source1 = bokeh.plotting.ColumnDataSource(
-        data={'x': data2['Arrival Date'], 'y': data2['Modal Price'],'desc':data1['commodity']})
+        data={'x': data2['Arrival Date'], 'y': data2['Modal Price'],'desc':data2['Market']})
     TOOLTIPS = [
         ('Price', '@y'),
     ]

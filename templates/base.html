@@ -89,8 +89,9 @@
             {% if session['logged_in'] == True %}
                     <li><a href="/view_user_all/{{ username }}">Announcements</a></li>
 
-                    <li><a href="/User_profile/{{ username }}">{{username}}</a></li>
+
               {% if session['username'] == 'Admin' %}
+              <li><a href="/Admin_profile/{{ username }}">{{username}}</a></li>
               <li><a href="/admin_request">Requests & Reports</a></li>
               <li><a href="/fetch_temp">Data Request</a></li>
               {% else %}
@@ -99,6 +100,7 @@
               {% else %}
                <li><a href="/req_auc">Auction Request</a></li>
               {% endif %}
+              <li><a href="/User_profile/{{ username }}">{{username}}</a></li>
                     <li><a href="/cart/{{username}}">Your Cart</a></li>
                  <li><a href="/assets/{{username}}">Assets</a></li>
               {% endif %}

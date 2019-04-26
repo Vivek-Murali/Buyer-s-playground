@@ -46,7 +46,7 @@
     <ul style="list-style-type:none; font-size:24px; display:block;">
         <li><h3>Requests</h3></li>
         <li ><a href="#section-london" style="color:black;">Auction Requests</a></li>
-        <li ><a href="#section-paris" style="color:black;">Other Reports</a></li>
+        <li ><a href="#section-paris" style="color:black;">Auction Payouts</a></li>
     </ul>
 </div>
     </div>
@@ -65,8 +65,17 @@
             </table></div>
 </div>
 <div id="section-paris" class="tab-content">
-    <h2>Paris</h2>
-    <p>Paris, France's capital, is a major European city and a global center for art, fashion, gastronomy and culture. Its picturesque 19th-century cityscape is crisscrossed by wide boulevards and the River Seine. </p>
+    <h3 style="text-align:center;">Auction Payouts</h3>
+            <div align="center">
+            <table align="center">
+                <tr><th style="text-align:center;">Username</th><th>&nbsp;</th><th style="text-align:center;">Description</th><th style="text-align:center;">Date</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Action</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Status</th></tr>
+            {% if posts|length > 0 %}
+            {% for post in posts1 %}
+                <tr><td style="text-align:center;"><b>{{ post1._id}}</b></td><td>&nbsp;</td><td style="text-align:center;"><p>{{post1.current_bid}}</p></td><td style="text-align:center;"><b>{{post1.created_date}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><a href="/accept_bid/{{post1.username}}" style="color:green;"><b>Approve</b></a>&nbsp;&nbsp;<a href="#" style="color:blue;"><b>Check</b></a></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.status}}</b></td></tr>&nbsp;&nbsp;
+                {% endfor %}
+                {% else %}
+            {% endif %}
+            </table></div>
 </div>
 </div>
 </div>

@@ -6,11 +6,12 @@ import pymongo
 
 
 class Anno(object):
-    def __init__(self, message,username,picture,likes,date_posted = datetime.datetime.now(), _id=None):
+    def __init__(self, message,username,picture,likes,anno_type,date_posted = datetime.datetime.now(), _id=None):
         self.message = message
         self.username = username
         self.picture = picture
         self.likes = likes
+        self.anno_type = anno_type
         self.date_posted = date_posted
         self._id = uuid.uuid4().hex  if _id is None else _id
 
@@ -46,8 +47,12 @@ class Anno(object):
         return cls(**post_data)
 
     @staticmethod
-    def from_all_topic():
-        return [post for post in Database.find(collection='post', query={}).sort('date_posted', pymongo.DESCENDING)]
+    def from_all_noraml():
+        return [post for post in Database.find(collection='post', query={'anno_type':'Normal'}).sort('date_posted', pymongo.DESCENDING)]
+
+    @staticmethod
+    def from_all_admin():
+        return [post for post in Database.find(collection='post', query={'anno_type':'Admin'}).sort('date_posted', pymongo.DESCENDING)]
 
     @staticmethod
     def from_user_topic(username):
@@ -59,6 +64,7 @@ class Anno(object):
             'username': self.username,
             'message': self.message,
             'picture': self.picture,
+            'anno_type':self.anno_type,
             'likes': [self.likes],
             'date_posted': self.date_posted
         }

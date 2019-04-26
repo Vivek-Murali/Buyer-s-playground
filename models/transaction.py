@@ -80,6 +80,20 @@ class TransactionBlockchain(object):
         }
 
     @staticmethod
+    def full_trans_chain():
+        response = {
+            'chain': TransactionBlockchain().chain,
+            'length': len(TransactionBlockchain().chain),
+        }
+        return response
+
+    @staticmethod
     def from_user_topic(username):
         return [post for post in
-                Database.find(collection='Transaction_Normal', query=({'transactions.username': username},{'transactions':True}))]
+                Database.find(collection='Transaction_Normal', query=({'username': username}))]
+
+    @staticmethod
+    def from_user_all():
+        return [post for post in
+                Database.find(collection='Transaction_block',
+                              query=({}))]

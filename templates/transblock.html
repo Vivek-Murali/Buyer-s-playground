@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    <h2 align="center" style="text-aline:center; font-family: Rockwell">Orders</h2>&nbsp;
+    <br>
+    <input id="ccNo" type="text" size="20" value="{{response}}" placeholder="Card Number" name="cno"  required />
+     {% if posts|length > 0 %}
+            {% for post in posts %}
+     <div class="col-md-9 col-md-offset-1 well" style="background-color: white">
+         <textarea class="form-control" rows="5" id="des" name="description">{{post}}</textarea>
+
+
+
+         {% endfor %}</div>
+        <hr>
+                {% else %}
+            <h4 class="text-center">There aren't any posts yet!</h4>
+                {% endif %}
+
+</div>
+{% endblock %}
