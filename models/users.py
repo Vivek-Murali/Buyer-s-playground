@@ -7,7 +7,7 @@ __author__ = 'jetfire'
 
 
 class User(object):
-    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes, type, bal,status,dob,last_login,register_date,_id=None):
+    def __init__(self, email, username,password, first_name, last_name, gender, phone, picture,picture_name, likes, type, bal,status,dob,last_login,register_date,current_location,_id=None):
         self.email = email
         self.password = password
         self.first_name = first_name
@@ -24,6 +24,7 @@ class User(object):
         self.dob = dob
         self.last_login= last_login
         self.register_date= register_date
+        self.current_location = current_location
         self._id = uuid.uuid4().hex if _id is None else _id
 
     @classmethod

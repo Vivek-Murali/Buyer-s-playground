@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<br/>
+    <div class="row">
+    <div class="col-md-6">
+      <div class="thumbnail">
+        <a href="#">
+          <img src="static/img/courier-2957629_640.jpg" alt="Lights" style="width:100%;height:300px;">
+          <div class="caption">
+            <p class="text-center">Track</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="thumbnail">
+        <a href="/scm_details/{{username}}">
+          <img src="static/img/hand-truck-564238_640.jpg" alt="Lights" style="width:100%;height:300px;">
+          <div class="caption">
+            <p class="text-center">Order Details</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

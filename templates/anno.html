@@ -47,7 +47,7 @@
         <li ><a href="#section-london" style="color:black;">General Announcements</a></li>
         <li ><a href="#section-london" style="color:black;">Admin Announcements</a></li>
         <li><a href="#section-paris" style="color:black;">Auction Announcements</a></li>
-        <li><a href="#section-paris" style="color:black;">User's Advertisements</a></li>
+        <li><a href="#section-request" style="color:black;">Other Requests</a></li>
     </ul>
 </div>
     </div>
@@ -56,6 +56,29 @@
 
     <form class="form-group" action="/new_post/<string:username>" method="post" enctype="multipart/form-data">
         	<input type="text" id="content" class="form-control" name="content" placeholder="Announcement" required="required">
+        <br>
+        <button type="submit" class="btn btn-success btn-lg btn-block" style="width:20%;">Submit</button>
+        <br>
+        <br>
+        {% if posts|length > 0 %}
+            {% for post in posts %}
+            <img src="{{url_for('file',filename=post.picture)}}" alt="Lights" style="height:70px;width:100%;" align="center">
+              <h4> Announcement by {{ post.username}}</h4>
+              <p class="fg-gray">{{post.date_posted}}</p>
+                {{ post.message}}
+
+              <p class="text-center">Hits {{post.likes|length}}</p>&nbsp;&nbsp; <button class="button secondary">Hit</button>
+                {% endfor %}
+                {% else %}
+            <h4 class="text-center">There aren't any posts yet!</h4>
+            {% endif %}
+
+    </form>
+</div>
+         <div id="section-request" class="tab-content">
+
+    <form class="form-group" action="/new_post/<string:username>" method="post" enctype="multipart/form-data">
+        	<input type="text" id="content1" class="form-control" name="content" placeholder="Announcement" required="required">
         <br>
         <button type="submit" class="btn btn-success btn-lg btn-block" style="width:20%;">Submit</button>
         <br>

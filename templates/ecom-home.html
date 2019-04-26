@@ -1,0 +1,35 @@
+
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<br/>
+    <div class="row">
+    <div class="col-md-6">
+      <div class="thumbnail">
+        <a href="/ecom_driect/{{username}}">
+          <img src="static/img/supermarket-949913_1280.jpg" alt="Lights" style="width:100%;height:100%;">
+          <div class="caption">
+            <p class="text-center">Go Direct</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="thumbnail">
+        <a href="/ecom_details/{{username}}">
+          <img src="static/img/basket-918416_1280.jpg" alt="Lights" style="width:100%;height:100%;">
+          <div class="caption">
+            <p class="text-center">Ad Details</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

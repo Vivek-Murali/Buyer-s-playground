@@ -11,9 +11,18 @@
     <meta charset="UTF-8">
     <title>Fancy blog</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://d14fo0winaifog.cloudfront.net/plotly-basic.js"></script>
+    <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css" rel="stylesheet">
+    <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}"/>
      <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}"/>
@@ -72,7 +81,7 @@
               {% if session['username'] == 'Admin' %}
 
                 {% else %}
-                <li><a href="#">Contact US</a></li>
+                <li><a href="#">Contact Us</a></li>
               {% endif %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -90,13 +99,13 @@
               {% else %}
                <li><a href="/req_auc">Auction Request</a></li>
               {% endif %}
-                    <li><a href="#">Wish List</a></li>
+                    <li><a href="/cart/{{username}}">Your Cart</a></li>
                  <li><a href="/assets/{{username}}">Assets</a></li>
               {% endif %}
 
                     {{ nav_link('logout_user', 'Sign Out') }}
             {% else %}
-                    {{ nav_link('login_template', 'Sign IN') }}
+                    {{ nav_link('login_template', 'Sign In') }}
                     {{ nav_link('register_template', 'Sign Up') }}
             {% endif %}
           </ul>

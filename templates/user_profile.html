@@ -22,18 +22,14 @@
             <tr>
       <th style="text-align:center;">Wallet Balance</th>
       <th> &nbsp;</th>
-      <th style="text-align:center;">Hits</th>
-      <th>&nbsp; </th>
-      <th style="text-align:center;">List of Wish Items</th>
+      <th style="text-align:center;">Last Login</th>
       <th>&nbsp; </th>
       </tr>
                 <tr>
                     {% for user in users %}
-                    <td style="text-align:center;"><p>{{user.bal}}</p>{% endfor %}</td>
+                    <td style="text-align:center;"><p>{{user.bal}}</p></td>
       <td> &nbsp;</td>
-      <td style="text-align:center;">Hits</td>
-      <td>&nbsp; </td>
-      <td style="text-align:center;">List of Wish Items</td>
+      <td style="text-align:center;">{{user.lo_time}}{% endfor %}</td>
       <td>&nbsp; </td>
       </tr>
             </table></div>{% endif %}
@@ -58,7 +54,7 @@
             <hr>
         {% endfor %}</div>
      <div class="col-xs-8">
-         {% if session['username'] == 'Admin' %}{% else %}
+         {% if session['username'] == 'Admin' %}<h3 align="center"> {{ username }}'s Record</h3>{% else %}
         <h3 align="center"> {{ username }}'s Transaction History</h3>{% endif %}
     </div>
     </div>

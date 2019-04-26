@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+
+<style type="text/css">
+        .header{
+            text-align: center;
+            background-color: rgb(136, 185, 229);
+            height: 70px;
+            line-height: 70px;
+        }
+        .chart{
+            margin-top: 30px;
+            text-align: center;
+        }
+</style>
+{% endblock %}
+{% block content %}
+
+    <div class="header">
+        <h2>
+            Basic Analysis
+        </h2>
+    </div>
+
+
+<div id="mapid" style="width:100%;">{% include "map.html" %}</div>
+<div id="mapid1" style="width:100%;">{% include "map1.html" %}</div>
+
+{% endblock %}
+
+

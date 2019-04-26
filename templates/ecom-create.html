@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<br>
+    <div class="container">
+        <div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+    <form class="form-container" action="/ecom_create" method="post" enctype="multipart/form-data">
+		<h2>Post An Ad</h2>
+         <div class="form-group">
+              <label for="comname">Name of the Commodity</label>
+        	<select class="form-control" id="r" name="comname">
+                <option value="0" selected>Select a Value</option>
+                <option value="Sugarcane">Sugarcane</option>
+                <option value="Jaggery">Jaggery</option>
+                <option value="Carrot">Carrot</option>
+                <option value="Cabbage">Cabbage</option>
+                <option value="Apple">Apple</option>
+</select>
+        </div>
+
+        <div class="form-group">
+            <label >Quantity in Kgs</label>
+        	<input type="text" id="Quantity" class="form-control" name="Quantity"  required="required">
+        </div>
+
+		<div class="form-group">
+            <label >Model Price</label>
+            <input type="text" id="price" class="form-control" name="price" required="required">
+        </div>
+
+        <div class="form-group">
+            <label >Description</label>
+            <textarea class="form-control" rows="5" id="des" name="description"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label >Image</label>
+            <input type="file" id="file" class="form-control" name="image" placeholder="Photo" required="required", accept="image/*">
+        </div>
+        <div class="form-group">
+            <label >Address</label>
+            <input type="text" id="address" class="form-control" name="address" required="required">
+        </div>
+        <div class="form-group">
+            <label >Pin Code</label>
+            <input type="text" id="pin code" class="form-control" name="pincode" required="required">
+        </div>
+
+
+            <button type="submit" class="btn btn-success btn-lg btn-block">Submit</button>
+    </form>
+    </div>
+        <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    </div>
+    </div>
+{% endblock %}

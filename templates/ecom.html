@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    <h2 align="center" style="text-aline:center; font-family: Rockwell">E-commerce Section</h2>&nbsp;
+    <br>
+    <a href="/ecom_temp" style="color:green;" >Post an Ad</a>
+    <form  action="/buy" method="post" enctype="multipart/form-data">
+     {% if posts|length > 0 %}
+            {% for post in posts %}
+     <div class="col-md-9 col-md-offset-1 well" style="background-color: white">
+            <input type="hidden" id="ecomId" name="ecomId" value="{{post._id}}">
+            <input type="hidden" id="username" name="username" value="{{username}}">
+           <p><span style="color:blue; font-size:15pt; font-style:solid">Commodity Name:&nbsp;{{post.commodity_name}}</span><br><br>
+                <img src="{{url_for('file',filename=post.image)}}" class="rounded float-left" alt="Lights" style="height:100px;width:100px;">
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Commodity Value:&nbsp;{{post.commodity_value}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black; font-size:12pt; font-style:solid">Seller:&nbsp;{{post.username}}</span><br>
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Description:&nbsp;{{ post.description}}</span><br>
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Quantity:&nbsp;{{post.quantity}} Kgs</span>&nbsp;&nbsp;&nbsp;<span style="color:Red; font-size:12pt; font-style:solid">Price:&nbsp;Rs {{post.price}}/-</span><br>
+               <span style="color:black; font-size:11pt; font-style:solid">&nbsp;&nbsp;Address:&nbsp;{{post.address}}</span><br>
+               <span style="color:black; font-size:11pt; font-style:solid">&nbsp;&nbsp;Rating:&nbsp;{{post.rating}}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:black; font-size:11pt; font-style:solid">&nbsp;&nbsp;Date Posted:&nbsp;{{post.created_date}}</span>
+           </p>
+
+                {% if post.username == username %}
+
+                      {% else %}
+                <button  id="Button" class="btn" data-toggle="modal" data-target="#myModal">Buy</button>
+                {% endif %}
+         {% endfor %}</div>
+        <hr>
+                {% else %}
+            <h4 class="text-center">There aren't any posts yet!</h4>
+                {% endif %}
+     </form>
+
+</div>
+{% endblock %}

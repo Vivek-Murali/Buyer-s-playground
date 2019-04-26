@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+<br/>
+    <br/>
+    Total Amount :{{ammount}}
+<div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+    <form class="form-container" id="#" action="#" method="post">
+         <input type="hidden" id="ecomId" name="amount" value="{{ammount}}">
+            <input type="hidden" id="username" name="username" value="{{username}}">
+        <div class="form-group">
+            <label >Address</label>
+            <input type="text" id="address" class="form-control" name="address" required="required">
+        </div>
+       <div class="form-group">
+            <label>
+            <input type="radio" name="type" id="optionsRadios1" value="1" required="required">
+            Wallet
+           </label>
+           <label>
+           <input type="radio" name="type" id="optionsRadios2" value="2" required="required">
+            Cards
+          </label>
+        </div>
+        <button  id="Button" class="btn" data-toggle="modal" data-target="#myModal">Pay</button>
+    </form>
+        </div>
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+
+</div>
+</div>
+{% endblock %}

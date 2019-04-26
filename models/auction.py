@@ -2,6 +2,7 @@ import uuid
 from common.database import Database
 import json
 from time import time
+from datetime import date, timedelta
 import hashlib
 __author__ = 'jetfire'
 
@@ -140,8 +141,10 @@ class Auction(object):
 
     @staticmethod
     def from_all_auction():
+        yesterday = date.today() - timedelta(1)
+        yesterday = yesterday.strftime('%d-%m-%y')
         return [post for post in
-                Database.find(collection='auction', query=({}))]
+                Database.find(collection='auction', query=({"created_date":yesterday}))]
 
     @staticmethod
     def from_user_profile(username):

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <br>
+    <h2 align="center" style="text-aline:center; font-family: Rockwell">{{username}}'s Cart</h2>&nbsp;
+    <br> <form  action="/remove" method="post" enctype="multipart/form-data">
+   <button  id="Button" class="btn" data-toggle="modal" data-target="#myModal">Remove</button> &nbsp;&nbsp;<a href="/checkout/{{username}}" style="color:green;" >Proceed To Checkout</a><br>
+
+     {% if posts|length > 0 %}
+            {% for post in posts %}
+    <br>
+
+            <input type="hidden" id="auctionId" name="ecomId" value="{{post._id}}">
+            <input type="hidden" id="username" name="username" value="{{username}}">
+           <p> <input type="checkbox" id="check" name="remove" value="{{post._id}}" required="required"><span style="color:blue; font-size:15pt; font-style:solid">Commodity Name:&nbsp;{{post.commodity_name}}</span><br><br>
+                <img src="{{url_for('file',filename=post.image)}}" class="rounded float-left" alt="Lights" style="height:100px;width:100px;">
+                 &nbsp;&nbsp;<span style="color:black; font-size:12pt; font-style:solid">Seller:&nbsp;{{post.seller}}</span><br>
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Description:&nbsp;{{ post.description}}</span><br>
+               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Quantity:&nbsp;{{post.Quantity}} Kgs</span>&nbsp;&nbsp;&nbsp;<span style="color:Red; font-size:12pt; font-style:solid">Price:&nbsp;Rs {{post.price}}/-</span><br>
+               <span style="color:black; font-size:11pt; font-style:solid">&nbsp;&nbsp;Date Purchased:&nbsp;{{post.date_purchased}}</span>
+           </p>
+         {% endfor %}
+        <hr>
+                {% else %}
+            <h4 class="text-center">There aren't any Items</h4>
+                {% endif %}
+     </form>
+
+</div>
+{% endblock %}

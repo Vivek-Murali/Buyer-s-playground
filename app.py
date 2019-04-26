@@ -10,15 +10,31 @@ from common.database import Database
 from flask_pymongo import PyMongo
 from models.blockchain import Blockchain
 from models.ass_blockchain import AssetsBlockchain
+from models.transaction import TransactionBlockchain
 from models.auction import Auction
+from models.Machine_learning import MlModel
+from models.Ecom import Ecom
 from models.Scrapping_with_classs import Check
 from selenium.common.exceptions import WebDriverException
 from uuid import uuid4
 import pymongo
 from models.announcement import Anno
 import stripe
+import pandas as pd
+from geopy.geocoders import Nominatim
+import geocoder
+from bokeh.models import HoverTool,FactorRange, Plot, LinearAxis, Grid
+from bokeh.plotting import figure
+from bokeh.io import output_file,save
+import bokeh.plotting
+from bson.objectid import ObjectId
+import pickle
+from bokeh.embed import components
+from bokeh.models.sources import ColumnDataSource
+import json
 
-
+conn = pymongo.MongoClient('mongodb://jetfire:vivek95@ds043477.mlab.com:43477/heroku_hnv16g8k')
+db = conn['heroku_hnv16g8k']
 app = Flask(__name__)  # '__main__'
 app.secret_key = "Hero"
 app.config['MONGO_DBNAME']="heroku_hnv16g8k"
@@ -43,7 +59,7 @@ stripe_keys = {
   'secret_key': "sk_test_lRubQfxlGGUAHqZQzpJ78M8u",
   'publishable_key':"pk_test_he7jrXDbjsKMIR1JofcmzCnH"
 }
-
+#model = pickle.load(open('models/model1.pkl', 'rb'))
 stripe.api_key = stripe_keys['secret_key']
 
 
@@ -84,8 +100,10 @@ def register_user():
     type = "1"
     bal = 0
     status = 1
-    lo_time = datetime.datetime.utcnow()
-    re_time = datetime.datetime.utcnow()
+    lo_time1 = datetime.datetime.now()
+    lo_time = lo_time1.strftime('%d-%m-%y %H:%M')
+    re_time1 = datetime.datetime.now()
+    re_time = re_time1.strftime('%d-%m-%y %H:%M')
     filename = uuid4().hex + photo.filename
     picture = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
     user = User.get_by_username(username)
@@ -234,6 +252,31 @@ def charge():
     col1.update_one({"username": username},
                     {"$inc": {"bal":amount}},
                     upsert=False)
+    values = TransactionBlockchain.json(user.username, user._id, amount, des)
+    required = ['username', 'user_id', 'amount', 'description']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+    index = ablockchain.new_transaction_asset(values['username'], values['user_id'],
+                                              values['amount'], values['description'])
+    response = {'message': f'Transaction will be added to Block {index}'}
+    result = jsonify(response)
+    last_block = ablockchain.last_block
+    last_proof = last_block['proof']
+    proof = ablockchain.proof_of_work(last_proof)
+
+    # Forge the new Block by adding it to the chain
+    previous_hash = blockchain.hash(last_block)
+    block = ablockchain.new_block(proof, previous_hash)
+
+    response = {
+        'node_id': node_identifier,
+        'message': "New Block Forged",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    Database.insert('Transaction_block', response)
     flash("Added Successfully", category='success')
 
     return make_response(user_profile(username))
@@ -311,7 +354,7 @@ def edit_template_admin():
 def login_user():
     username = request.form['username']
     password = request.form['password']
-
+    loc = request.form['loc']
     if User.login_valid(username, password):
         User.login(username)
     else:
@@ -323,14 +366,16 @@ def login_user():
             mail.send(msg)
             flash("Incorrect Username or Password ", category='danger')
             session['username'] = None
-        return make_response(login_template())
+        return render_template("login.html")
 
     user = mongo.db.users.find_one_or_404({'username':username})
-    lo_time1 = datetime.datetime.utcnow()
-    lo_time = lo_time1.ctime()
+    lo_time1 = datetime.datetime.now()
+    lo_time = lo_time1.strftime('%d-%m-%y %H:%M')
+    loc = geocoder.ip(loc)
+    location = loc.latlng
     col1 = Database.DATABASE['users']
     col1.update_one({"username": username},
-                    {"$set": {"last_login":lo_time}},
+                    {"$set": {"last_login":lo_time, 'current_location':location}},
                     upsert=False)
     session['type'] = user['type']
     session['status'] = user['status']
@@ -402,6 +447,16 @@ def new_post(username):
 @app.route('/auction')
 def auction_template():
     return render_template('auction.html', username=session['username'])
+
+
+@app.route('/ecom_home')
+def ecom_home_template():
+    return render_template('ecom-home.html', username=session['username'])
+
+
+@app.route('/scm_home')
+def scm_home_template():
+    return render_template('scm-home.html', username=session['username'])
 
 
 @app.route('/auction_home')
@@ -500,6 +555,265 @@ def auction_create():
     return make_response(auction_home_template())
 
 
+@app.route('/ecom_create', methods=['POST'])
+def ecom_create():
+    commodity_name = request.form['comname']
+    username = session['username']
+    com = Database.find_one('products', {'commodity': commodity_name})
+    commodity_val = com['value']
+    quantity = request.form['Quantity']
+    price = request.form['price']
+    description = request.form['description']
+    address = request.form['address']
+    pin = request.form['pincode']
+    geolocator = Nominatim(user_agent="specify_your_app_name_here")
+    location = geolocator.geocode(address)
+    if location is None:
+        location = geolocator.geocode(pin)
+        geolocation = tuple((location.latitude, location.longitude))
+    else:
+        geolocation = tuple((location.latitude, location.longitude))
+    rating = int(0)
+    date = datetime.datetime.now()
+    date = date.strftime('%d-%m-%y')
+    image = request.files['image']
+    filename = uuid4().hex + image.filename
+    mongo.save_file(filename, image)
+    Ecom.create_new(username,commodity_name,commodity_val,quantity,price,description,filename,date,address,geolocation,rating)
+    flash("Posted Successfully", category='success')
+    return make_response(ecom_home_template())
+
+
+@app.route('/ecom_driect/<string:username>')
+@app.route('/ecom_driect')
+def ecom_direct_template(username):
+    b = Database.find_one(collection='users', query={'username': username})
+    loc = b['current_location']
+    posts = MlModel.filter_based(loc)
+    return render_template('ecom.html', username=session['username'], posts=posts)
+
+
+@app.route('/ecom_details/<string:username>')
+@app.route('/ecom_details')
+def ecom_details_template(username):
+    posts = Ecom.from_user_ads(username)
+    return render_template('ecom.html', username=session['username'], posts=posts)
+
+
+@app.route('/ecom_temp')
+def ecom_create_template():
+    return render_template('ecom-create.html', username=session['username'])
+
+
+@app.route('/cart/<string:username>')
+@app.route('/cart')
+def cart_template(username):
+    posts = Ecom.from_user_cart(username)
+    return render_template('cart.html', username=session['username'], posts=posts)
+
+
+@app.route('/buy', methods=['POST'])
+def buy():
+    username = request.form['username']
+    ecom_id = request.form['ecomId']
+    date = datetime.datetime.now()
+    date = date.strftime('%d-%m-%y')
+    b = Database.find_one(collection='ecom', query={'_id': ecom_id})
+    Database.insert(collection='cart', data={'username':username,'ecom_id': b['_id'], 'address':b['address'],"commodity_name":b['commodity_name'],
+                                            'price':int(b['price']),'description':b['description'],'image':b['image'],'Quantity':b['quantity'],
+                                            'date_purchased':date,"status": "",'seller':b['username']})
+    flash("Product Added To Cart", category='success')
+    return make_response(cart_template(username))
+
+
+@app.route('/remove', methods=['POST'])
+def remove_item():
+    ecom_id = request.form['remove']
+    username = request.form['username']
+    db.cart.delete_one({'_id': ObjectId(ecom_id)})
+    flash("Product Removed", category='danger')
+    return make_response(cart_template(username))
+
+
+@app.route('/checkout/<string:username>')
+@app.route('/checkout')
+def checkout_template(username):
+    pipline = [{'$match':{'$and':[{'status':"", 'username':username}]}},
+               {"$group":{'_id':'$username', 'TotalAmount': {'$sum':'$price'}}}]
+    result = list(db.cart.aggregate(pipline))
+    print(result)
+    for x in result:
+        #a = x.items()[0]
+        print(x['TotalAmount'])
+        amount = x['TotalAmount']
+
+    session['ammount'] = amount
+    return render_template('process_out.html', username=session['username'], ammount=session['ammount'])
+
+
+@app.route('/final_checkout/<string:username>')
+@app.route('/final_checkout')
+def final_checkout(username):
+    amount = request.form['amount']
+    username = request.form['username']
+    amount = int(amount)
+    a = db.cart.find({'username': username})
+    des = a['description']
+    token = uuid4().hex
+    type = request.form['type']
+    lo_time1 = datetime.datetime.now()
+    lo_time = lo_time1.strftime('%d-%m-%y %H:%M')
+    user = mongo.db.users.find_one({'username': username})
+    if type == '1':
+        col1 = Database.DATABASE['auction']
+        col2 = Database.DATABASE['users']
+        b = Database.find_one(collection='users', query={'username': username})
+        if b['bal'] >= amount:
+            col2.update_one({"username": username},
+                            {"$inc": {"bal": -amount}},
+                            upsert=False)
+            Database.insert('Transaction_Normal',
+                            {"token_id": token, "username": username, "email": user['email'], "amount": amount,
+                             "description": des, "date": lo_time})
+            col1 = Database.DATABASE['cart']
+            col1.update_one({"username": username},
+                            {"$set": {"status": "Order Placed"}},
+                            upsert=False)
+            b = Database.find_one(collection='cart', query={'username': username})
+            address = b['address']
+            geolocator = Nominatim(user_agent="specify_your_app_name_here")
+            location = geolocator.geocode(address)
+            geolocation = tuple((location.latitude, location.longitude))
+            Database.insert(collection='SCM', data={'username': username, 'ecom_id': b['_id'], 'address': b['address'],
+                                                     "commodity_name": b['commodity_name'],"geolocation":geolocation,
+                                                     'price': int(b['price']), 'description': b['description'],
+                                                     'image': b['image'], 'Quantity': b['quantity'],
+                                                     'date_purchased': lo_time, "status": "Order Place", 'seller': b['username']})
+            values = TransactionBlockchain.json(user.username, user._id, amount, des)
+            required = ['username', 'user_id', 'amount', 'description']
+            if not all(k in values for k in required):
+                return 'Missing values', 400
+            index = ablockchain.new_transaction_asset(values['username'], values['user_id'],
+                                                      values['amount'], values['description'])
+            response = {'message': f'Transaction will be added to Block {index}'}
+            result = jsonify(response)
+            last_block = ablockchain.last_block
+            last_proof = last_block['proof']
+            proof = ablockchain.proof_of_work(last_proof)
+
+            # Forge the new Block by adding it to the chain
+            previous_hash = blockchain.hash(last_block)
+            block = ablockchain.new_block(proof, previous_hash)
+
+            response = {
+                'node_id': node_identifier,
+                'message': "New Block Forged",
+                'index': block['index'],
+                'transactions': block['transactions'],
+                'proof': block['proof'],
+                'previous_hash': block['previous_hash'],
+            }
+            Database.insert('Transaction_block', response)
+            flash("Order Placed", category='success')
+            return make_response(user_profile(username))
+        else:
+            flash("Low Balance fill your balance to ake a transaction", category='danger')
+            return make_response(user_profile(username))
+    else:
+        money = amount
+        session['money'] = money
+        return render_template('payout1.html', username=session['username'],
+                               money=session['money'], key=stripe_keys['publishable_key'])
+
+
+@app.route('/charge1', methods=['POST'])
+def charge1():
+    # Amount in cents
+    amount = int(session['money'])
+    username = session['username']
+    card_number = request.form['cno']
+    exp_month = request.form['expMonth']
+    exp_year = request.form['expYear']
+    cvv_no = request.form['cvv']
+    a = db.cart.find({'username':username})
+    des = a['description']
+    lo_time1 = datetime.datetime.now()
+    lo_time = lo_time1.strftime('%d-%m-%y %H:%M')
+    token = stripe.Token.create(
+        card={
+            "number": card_number,
+            "exp_month": exp_month,
+            "exp_year": exp_year,
+            "cvc": cvv_no
+        },
+    )
+    user = mongo.db.users.find_one({'username': username})
+    customer = stripe.Customer.create(
+        email=user['email'],
+        source=token
+    )
+
+    charge = stripe.Charge.create(
+        customer=customer.id,
+        amount=amount,
+        currency='inr',
+        description='Flask Charge'
+    )
+    Database.insert('Transaction_Normal', {"token_id": token, "username": username, "email": user['email'], "amount": amount,
+                                    "description": des, "date":lo_time})
+    col1 = Database.DATABASE['cart']
+    col1.update_one({"username": username},
+                    {"$set": {"status":"Order Placed"}},
+                    upsert=False)
+    b = Database.find_one(collection='cart', query={'username': username})
+    address = b['address']
+    geolocator = Nominatim(user_agent="specify_your_app_name_here")
+    location = geolocator.geocode(address)
+    geolocation = tuple((location.latitude, location.longitude))
+    Database.insert(collection='SCM', data={'username': username, 'ecom_id': b['_id'], 'address': b['address'],
+                                            "commodity_name": b['commodity_name'], "geolocation": geolocation,
+                                            'price': int(b['price']), 'description': b['description'],
+                                            'image': b['image'], 'Quantity': b['quantity'],
+                                            'date_purchased': lo_time, "status": "Order Place",
+                                            'seller': b['username']})
+    values = TransactionBlockchain.json(user.username, user._id, amount, des)
+    required = ['username', 'user_id', 'amount', 'description']
+    if not all(k in values for k in required):
+        return 'Missing values', 400
+    index = ablockchain.new_transaction_asset(values['username'], values['user_id'],
+                                              values['amount'], values['description'])
+    response = {'message': f'Transaction will be added to Block {index}'}
+    result = jsonify(response)
+    last_block = ablockchain.last_block
+    last_proof = last_block['proof']
+    proof = ablockchain.proof_of_work(last_proof)
+
+    # Forge the new Block by adding it to the chain
+    previous_hash = blockchain.hash(last_block)
+    block = ablockchain.new_block(proof, previous_hash)
+
+    response = {
+        'node_id': node_identifier,
+        'message': "New Block Forged",
+        'index': block['index'],
+        'transactions': block['transactions'],
+        'proof': block['proof'],
+        'previous_hash': block['previous_hash'],
+    }
+    Database.insert('Transaction_block', response)
+    flash("Order Placed", category='success')
+
+    return make_response(user_profile(username))
+
+
+@app.route('/scm_details/<string:username>')
+@app.route('/scm_details')
+def scm_details_template(username):
+    posts = [post for post in
+                Database.find(collection='SCM', query={'username': username})]
+    return render_template('scm_details.html', username=session['username'], posts=posts)
+
+
 @app.route('/auctions/<string:username>')
 @app.route('/auctions')
 def auctions(username):
@@ -555,6 +869,53 @@ def auction_req_template():
         session['status'] = user['status']
         flash("Requested Successfully", category='success')
         return make_response(user_home())
+
+
+@app.route('/plot')
+def plot():
+    a = db.products.find()
+    data1 = pd.DataFrame(list(a))
+    print(data1)
+    source1 = bokeh.plotting.ColumnDataSource(data= {'x':data1['rating'], 'y':data1['value'], 'desc':data1['commodity']})
+    TOOLTIPS = [
+        ('Avg Rating', "@x"),
+        ('Value', '@y'),
+        ("Commodity", "@desc"),
+    ]
+    hover = HoverTool(
+        tooltips=TOOLTIPS,
+    )
+    p = figure(y_axis_label='Avg Ratings', x_axis_label='Commodity Values',plot_width=1200, plot_height=200,)
+    p.add_tools(hover)
+    x = data1['value']
+    y = data1['rating']
+    p.vbar(x='y',top='x', color='red', width=0.5, source=source1)
+    output_file('templates/map.html')
+    save(p)
+
+
+    b = db.test2.find()
+    data2 = pd.DataFrame(list(b))
+    data2['Arrival Date'] = pd.to_datetime(data2['Arrival Date'], format="%d/%m/%Y")
+    source1 = bokeh.plotting.ColumnDataSource(
+        data={'x': data2['Arrival Date'], 'y': data2['Modal Price']})
+    TOOLTIPS = [
+        ('Date', "@x"),
+        ('Price', '@y'),
+    ]
+    hover = HoverTool(
+        tooltips=TOOLTIPS,
+    )
+    p = figure(y_axis_label='price', x_axis_label='date', plot_width=1200, plot_height=200, )
+    p.add_tools(hover)
+    data2['Arrival Date']=pd.to_datetime(data2['Arrival Date'],format="%d/%m/%Y")
+    x = data2['Arrival Date']
+    y = data2['Modal Price']
+    p.line(x,y)
+    p.cross(x,y, size=15)
+    output_file('templates/map1.html')
+    save(p)
+    return render_template("plot.html", username=session['username'])
 
 
 @app.route('/assets/<string:username>')

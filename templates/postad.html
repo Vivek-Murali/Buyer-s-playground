@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h2>Post Ad</h2>&nbsp;
+    <br>
+        <br>
+
+     <form  id="new-blog" action="/insurance_reg" method="post" enctype="multipart/form-data">
+        <div class="form-group row">
+        <div class="col-xs-4">
+         <div class="form-group">
+            <label for="name">Insurance_Name</label>
+            <input type="text" id="name" class="form-control" name="name">
+        </div>
+        </div>
+         <div class="col-xs-4">
+        <div  class="form-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" class="form-control" name="description">
+        </div>
+             <div class="form-group">
+            <label >Insurance For :</label>
+            <label>
+            <input type="radio" name="type" id="optionsRadios1" value="Cattle Insurance" required="required">
+            Cattle Insurance
+           </label>
+           <label>
+           <input type="radio" name="type" id="optionsRadios2" value="Home Insurance" required="required">
+           Home Insurance
+          </label>
+                 <label>
+           <input type="radio" name="type" id="optionsRadios3" value="Vehicle Insurance" required="required">
+           Vehicle Insurance
+          </label>
+                 <label>
+           <input type="radio" name="type" id="optionsRadios4" value="Pump-Set Insurance" required="required">
+           Pump-Set Insurance
+          </label>
+        </div>
+         </div>
+            <div class="col-xs-4">
+        <div  class="form-group">
+            <label for="url">url</label>
+            <input type="text" id="url" class="form-control" name="url">
+        </div>
+         </div>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+<br>
+</div>
+{% endblock %}
