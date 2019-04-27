@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+<style>
+    #mapid
+    {
+          height: 500px;
+    }
+</style>
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<br>
+<div id="mapid">{% include "map.html" %}</div>
+    <div>
+        <h3>List of Places Recommendations</h3>
+        {% if posts|length > 0 %}
+        {% for food in posts %}
+
+            <div class="col-md-9 col-md-offset-1 well" style="background-color: white">
+             <p>{{ food.address}}</p>
+                <p style="color: dodgerblue"><a href="/place_rate/{{ food.Place }}" style="color:#800020;">{{ food.status}}</a></p>
+            <p>{{food.ecom_id}}</p>
+             <p>{{food.commodity_name}}</p>
+            </div>
+
+        {% endfor %}
+    {% else %}
+        <h4>There aren't any posts yet!</h4>
+    {% endif %}
+
+    </div>
+    <script>
+    var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    accessToken: 'your.mapbox.access.token'
+}).addTo(mymap);
+}
+    </script>
+{% endblock %}

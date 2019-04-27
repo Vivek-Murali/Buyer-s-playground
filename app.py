@@ -27,11 +27,11 @@ from bokeh.models import HoverTool,FactorRange, Plot, LinearAxis, Grid
 from bokeh.plotting import figure
 from bokeh.io import output_file,save
 import bokeh.plotting
+import folium
 from bson.objectid import ObjectId
 import pickle
 from bokeh.embed import components
 from bokeh.models.sources import ColumnDataSource
-import json
 
 conn = pymongo.MongoClient('mongodb://jetfire:vivek95@ds043477.mlab.com:43477/heroku_hnv16g8k')
 db = conn['heroku_hnv16g8k']
@@ -318,7 +318,8 @@ def insurance_template_reg():
     type = request.form['type']
     url =  request.form['url']
     Database.insert('insurance', {'name':name,'description': description, 'type':type, 'url':url})
-    return render_template("insurace_create.html", username=session['username'])
+    flash("Added Successfully", category='success')
+    return make_response(insurance_template_all())
 
 
 @app.route('/insurance_all', methods=['POST'])
@@ -330,6 +331,12 @@ def insurance_template_all():
     else:
         lists = [post for post in Database.find(collection='insurance', query={'name': name})]
     return render_template("list-insurance.html", username=session['username'], lists=lists)
+
+
+@app.route('/insurance_cattle')
+def insurance_template_all():
+    lists = [post for post in Database.find(collection='insurance', query={'type': 'Cattle Insurance'})]
+    return render_template("insurance_cattle.html", username=session['username'], lists=lists)
 
 
 @app.route('/user_all', methods=['POST'])
@@ -853,6 +860,23 @@ def scm_details_template(username):
     posts = [post for post in
                 Database.find(collection='SCM', query={'username': username})]
     return render_template('scm_details.html', username=session['username'], posts=posts)
+
+
+@app.route('/scm_details/<string:username>')
+@app.route('/scm_details')
+def scm_track_template(username):
+    scm = mongo.db.SCM.find_one({'username': username})
+    df2 = pd.DataFrame(list(scm))
+    m = folium.Map(location=[12.1, 74.6], tiles="OpenStreetMap", zoom_start=10)
+    for i in range(len(df2)):
+        icon_url = 'https://cdn1.iconfinder.com/data/icons/maps-locations-2/96/Geo2-Number-512.png'
+        icon = folium.features.CustomIcon(icon_url, icon_size=(28, 30))
+        popup = folium.Popup(df2.iloc[i]['address'], parse_html=True)
+        folium.Marker([df2.iloc[i]['geolocation']], popup=popup, icon=icon).add_to(m)
+    m.save('templates/track.html')
+    posts = [post for post in
+                Database.find(collection='SCM', query={'username': username})]
+    return render_template('scm_map.html', username=session['username'], posts=posts)
 
 
 @app.route('/auctions/<string:username>')

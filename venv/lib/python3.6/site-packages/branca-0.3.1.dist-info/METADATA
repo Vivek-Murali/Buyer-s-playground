@@ -1,0 +1,85 @@
+Metadata-Version: 2.1
+Name: branca
+Version: 0.3.1
+Summary: Generate complex HTML+JS pages with Python
+Home-page: https://github.com/python-visualization/branca
+Author: Martin Journois
+Author-email: UNKNOWN
+License: Copyright (C) 2013, Martin Journois
+Requires-Dist: jinja2
+Requires-Dist: six
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Description: |PyPI| |Travis| |Gitter|
+        
+        .. |PyPI| image:: https://img.shields.io/pypi/v/branca.svg
+            :target: https://pypi.python.org/pypi/branca/
+            :alt: PyPI Package
+        
+        .. |Travis| image:: https://travis-ci.org/python-visualization/branca.svg?branch=master
+            :target: https://travis-ci.org/python-visualization/branca
+            :alt: Travis Build Status
+        
+        .. |Gitter| image:: https://badges.gitter.im/python-visualization/folium.svg
+            :target: https://gitter.im/python-visualization/folium
+            :alt: Gitter
+        
+        Branca
+        ======
+        
+        This library is a spinoff from `folium`_, that would host the non-map-specific features.
+        
+        It may become a HTML+JS generation library in the future.
+        
+        It is based on Jinja2 only.
+        
+        There's no documentation, but you can browse the `examples`_ gallery.
+        
+        .. _`examples`: http://nbviewer.jupyter.org/github/python-visualization/branca/tree/master/examples
+        .. _`folium`: https://github.com/python-visualization/folium
+        
+        0.3.0
+        ~~~~~
+        - Add title to Figure (@fitoprincipe #33 and #39)
+        - Move templates to class attributes (@psarka #34 and #38)
+        - Explicit color support for range of ``n``
+          and diverging colormaps (@nanodan #29)
+        - Added class for hosting step colormap (@matsavage #25)
+        
+        0.2.0
+        ~~~~~
+        - Correct rendering utf-8 IFrame (@knil-sama #18)
+        - Remove embedded IFrame's border (@deelaka #17)
+        - Let IFrame contents go fullscreen (@sanga #13)
+        - Add HTML Popup Class to element.py (@samchorlton #6)
+        
+        0.1.0
+        ~~~~~
+        - Separate branca from folium (@bibmartin d678357)
+        - Enable HTML embedding in Html (@samchorlton 90f6b13)
+        
+Keywords: data visualization
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Development Status :: 5 - Production/Stable
