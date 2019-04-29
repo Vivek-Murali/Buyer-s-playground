@@ -14,9 +14,8 @@
         {% for user in users %}
     <div class="col-xs-4"><img class="img-circle" src="{{url_for('file',filename=user.picture_name)}}" style="width:70px; height:70px;"> <h1> {{ username }}</h1>
       {% endfor %}
-        <a href="/edit_profile2">Edit Profile</a>&nbsp;{% if session['username'] == 'Admin' %}{% else %}&nbsp;<a href="/add_money">Add Money</a></div>   {% endif %}
+        <a href="/edit_profile2">Edit Profile</a>&nbsp;<a href="/add_money">Add Money</a></div>
         <div class="col-xs-8">
-            {% if session['username'] == 'Admin' %}{% else %}
         <br><div class="container" align="center">
             <table align="center">
             <tr>
@@ -32,7 +31,7 @@
       <td style="text-align:center;">{{user.last_login}}{% endfor %}</td>
       <td>&nbsp; </td>
       </tr>
-            </table></div>{% endif %}
+            </table></div>
     </div>
 
     </div>
@@ -57,9 +56,15 @@
         {% endfor %}</div>
      <div class="col-xs-8">
         <h3 align="center"> {{ username }}'s Transaction History</h3>
-            <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Amount:&nbsp;{{ post.amount}}</span><
-               <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Description:&nbsp;{{post.description}} Kgs</span>
-               <span style="color:black; font-size:11pt; font-style:solid">&nbsp;&nbsp;Date:&nbsp;{{post."date"}}</span><br>
+        {% for post in posts %}
+            <label>First Name:</label>
+            {{ post.amount}}<br>
+            <label>Last Name:</label>
+           {{post.description}} <br>
+            <label>Gender:</label>
+            {{ post.date}}<br>
+            <hr>
+        {% endfor %}</div>
     </div>
     </div>
 

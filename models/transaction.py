@@ -2,6 +2,7 @@ import json
 from time import time
 import hashlib
 from common.database import Database
+import pymongo
 
 
 class TransactionBlockchain(object):
@@ -90,7 +91,7 @@ class TransactionBlockchain(object):
     @staticmethod
     def from_user_topic(username):
         return [post for post in
-                Database.find(collection='Transaction_Normal', query=({'username': username}))]
+                Database.find(collection='Transaction_Normal', query=({'username': username})).sort('date', pymongo.DESCENDING)]
 
     @staticmethod
     def from_user_all():

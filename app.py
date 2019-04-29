@@ -176,6 +176,7 @@ def list_insurance_temp():
 def user_profile(username):
     users = User.from_user_profile(username)
     posts = TransactionBlockchain.from_user_topic(username)
+    print(posts)
     return render_template('user_profile.html', username=session['username'], users=users, posts=posts)
 
 
@@ -271,7 +272,7 @@ def charge():
     col1.update_one({"username": username},
                     {"$inc": {"bal":amount}},
                     upsert=False)
-    values = TransactionBlockchain.json(user.username, user._id, amount, des)
+    values = TransactionBlockchain.json(user['username'], user['_id'], amount, des)
     required = ['username', 'user_id', 'amount', 'description']
     if not all(k in values for k in required):
         return 'Missing values', 400
@@ -334,7 +335,7 @@ def insurance_template_all():
 
 
 @app.route('/insurance_cattle')
-def insurance_template_all():
+def insurance_template_cattle():
     lists = [post for post in Database.find(collection='insurance', query={'type': 'Cattle Insurance'})]
     return render_template("insurance_cattle.html", username=session['username'], lists=lists)
 
@@ -426,7 +427,7 @@ def file(filename):
 
 @app.route('/anno')
 def anno():
-    return render_template('anno.html')
+    return render_template('anno.html',username=session['username'])
 
 
 @app.route('/admin_request')
@@ -581,7 +582,6 @@ def bid():
     return make_response(bid_home_template())
 
 
-
 @app.route('/auction_create', methods=['POST'])
 def auction_create():
     commodity_name = request.form['comname']
@@ -699,9 +699,8 @@ def checkout_template(username):
     return render_template('process_out.html', username=session['username'], ammount=session['ammount'])
 
 
-@app.route('/final_checkout/<string:username>')
 @app.route('/final_checkout')
-def final_checkout(username):
+def final_checkout():
     amount = request.form['amount']
     username = request.form['username']
     amount = int(amount)
@@ -824,7 +823,7 @@ def charge1():
                                             'image': b['image'], 'Quantity': b['quantity'],
                                             'date_purchased': lo_time, "status": "Order Place",
                                             'seller': b['username']})
-    values = TransactionBlockchain.json(user.username, user._id, amount, des)
+    values = TransactionBlockchain.json(user['username'], user['_id'], amount, des)
     required = ['username', 'user_id', 'amount', 'description']
     if not all(k in values for k in required):
         return 'Missing values', 400
@@ -985,20 +984,21 @@ def plot():
     save(p)
 
 
-    b = db.test2.find()
+    b = db.test2.find({"Commodity Value":17})
     data2 = pd.DataFrame(list(b))
     print(data2)
     data2['Arrival Date'] = pd.to_datetime(data2['Arrival Date'], format="%d/%m/%Y")
     data2['Arrival Date'] = data2['Arrival Date'].dt.date
     print(data2['Arrival Date'])
-    source1 = bokeh.plotting.ColumnDataSource(
+
+    source2 = bokeh.plotting.ColumnDataSource(
         data={'x': data2['Arrival Date'], 'y': data2['Modal Price'],'desc':data2['Market']})
     TOOLTIPS = [
         ('Price', '@y'),
-    ]
+        ]
     hover = HoverTool(
-        tooltips=TOOLTIPS,
-    )
+    tooltips=TOOLTIPS,
+        )
     p = figure(y_axis_label='price', x_axis_label='date', plot_width=1200, plot_height=200,x_axis_type='datetime' )
     p.add_tools(hover)
     x = data2['Arrival Date']
@@ -1006,6 +1006,30 @@ def plot():
     p.line(x,y)
     p.cross(x,y, size=15)
     output_file('templates/map1.html')
+    save(p)
+
+    b = db.test2.find({"Commodity Value = 154":154})
+    data2 = pd.DataFrame(list(b))
+    print(data2)
+    print(data2['Market'])
+    data2['Arrival Date'] = pd.to_datetime(data2['Arrival Date'], format="%d/%m/%Y")
+    data2['Arrival Date'] = data2['Arrival Date'].dt.date
+    print(data2['Arrival Date'])
+    source3 = bokeh.plotting.ColumnDataSource(
+            data={'x': data2['Arrival Date'], 'y': data2['Modal Price'], 'desc1': data2['Market']})
+    TOOLTIPS = [
+            ('Price', '@y'),
+        ]
+    hover = HoverTool(
+            tooltips=TOOLTIPS,
+        )
+    p = figure(y_axis_label='price', x_axis_label='date',plot_width=1200, plot_height=200, x_axis_type='datetime')
+    p.add_tools(hover)
+    x = data2['Arrival Date']
+    y = data2['Modal Price']
+    p.line(x, y)
+    p.cross(x, y, size=15)
+    output_file('templates/map2.html')
     save(p)
     return render_template("plot.html", username=session['username'])
 
