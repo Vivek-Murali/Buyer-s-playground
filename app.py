@@ -29,6 +29,8 @@ from bokeh.io import output_file,save
 import bokeh.plotting
 import folium
 from bson.objectid import ObjectId
+from bokeh.models import DatetimeTickFormatter
+from math import pi
 import pickle
 from bokeh.embed import components
 from bokeh.models.sources import ColumnDataSource
@@ -108,14 +110,22 @@ def register_user():
     picture = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
     user = User.get_by_username(username)
     emailval = User.get_by_email(email)
+    current_location = 0
     if user is not None or emailval is not None:
         flash("Username or Email taken", category='warning')
         return make_response(register_template())
     else:
         mongo.save_file(filename, photo)
-        User.register(email, username, password, first_name, last_name, gender, phone, picture, filename, likes, type,status,bal,date,lo_time,re_time)
+        User.register(email, username, password, first_name, last_name, gender, phone, picture, filename, likes, type,status,bal,date,lo_time,re_time,current_location)
+        u = Database.find_one('users', {'username': username})
+        with app.app_context():
+            msg = Message(sender=app.config.get("MAIL_USERNAME"), recipients=[u['email']])
+            msg.subject = "Buyer's plyground New Registration"
+            msg.body = """Hello """+username+""",
+            Welcome to Buyer's plyground"""
+            mail.send(msg)
         flash("Registered Successfully", category='success')
-        return make_response(login_template())
+        return render_template('login.html')
 
 
 @app.route('/login')
@@ -176,7 +186,28 @@ def list_insurance_temp():
 def user_profile(username):
     users = User.from_user_profile(username)
     posts = TransactionBlockchain.from_user_topic(username)
-    print(posts)
+    b = db.Transaction_Normal.find({"username": username})
+    data2 = pd.DataFrame(list(b))
+    print(data2)
+    print(data2['date'])
+    data2['date'] = pd.to_datetime(data2['date'], dayfirst=True,infer_datetime_format=True)
+    #data2['date'] = data2['date'].dt.date
+    print(data2['date'])
+    source2 = bokeh.plotting.ColumnDataSource(
+        data={'x': data2['date'], 'y': data2['current_balance'], 'desc': data2['description']})
+    TOOLTIPS = [
+        ('Amount', '@y'),
+    ]
+    hover = HoverTool(
+        tooltips=TOOLTIPS,
+    )
+    p = figure(y_axis_label='Amount in Rs', x_axis_label='Date', plot_width=700, plot_height=200,x_axis_type='datetime')
+    p.add_tools(hover)
+    x = data2['date']
+    y = data2['current_balance']
+    p.line(x, y)
+    output_file('templates/trans.html')
+    save(p)
     return render_template('user_profile.html', username=session['username'], users=users, posts=posts)
 
 
@@ -236,13 +267,14 @@ def add_process_template():
 @app.route('/charge', methods=['POST'])
 def charge():
     # Amount in cents
+    trans = TransactionBlockchain()
     amount = int(session['money'])
     username = session['username']
     card_number = request.form['cno']
     exp_month = request.form['expMonth']
     exp_year = request.form['expYear']
     cvv_no = request.form['cvv']
-    des = "Added Money to Wallet"
+    description = "Added Money to Wallet"
     lo_time1 = datetime.datetime.now()
     lo_time = lo_time1.strftime('%d-%m-%y %H:%M')
     token = stripe.Token.create(
@@ -253,7 +285,7 @@ def charge():
             "cvc": cvv_no
         },
     )
-    user = mongo.db.users.find_one_or_404({'username': username})
+    user = mongo.db.users.find_one({'username': username})
     customer = stripe.Customer.create(
         email=user['email'],
         source=token
@@ -265,39 +297,62 @@ def charge():
         currency='inr',
         description='Flask Charge'
     )
-    Database.insert('Transaction_Normal',
-                    {"token_id": token, "username": username, "email": user['email'], "amount": amount,
-                     "description": des, "date": lo_time})
     col1 = Database.DATABASE['users']
     col1.update_one({"username": username},
                     {"$inc": {"bal":amount}},
                     upsert=False)
-    values = TransactionBlockchain.json(user['username'], user['_id'], amount, des)
+    user = mongo.db.users.find_one({'username': username})
+    Database.insert('Transaction_Normal',
+                    {"token_id": token, "username": username, "email": user['email'], "amount": amount,
+                     "description": description,"current_balance":user['bal'], "date": lo_time})
+    values = TransactionBlockchain.json(user['username'], user['_id'], amount, description)
     required = ['username', 'user_id', 'amount', 'description']
     if not all(k in values for k in required):
         return 'Missing values', 400
-    index = ablockchain.new_transaction_asset(values['username'], values['user_id'],
+    index = trans.new_transaction(values['username'], values['user_id'],
                                               values['amount'], values['description'])
     response = {'message': f'Transaction will be added to Block {index}'}
     result = jsonify(response)
-    last_block = ablockchain.last_block
+    last_block = trans.last_block
     last_proof = last_block['proof']
-    proof = ablockchain.proof_of_work(last_proof)
+    proof = trans.proof_of_work(last_proof)
 
     # Forge the new Block by adding it to the chain
-    previous_hash = blockchain.hash(last_block)
-    block = ablockchain.new_block(proof, previous_hash)
+    previous_hash = trans.hash(last_block)
+    today = datetime.datetime.today()
+    u1 = mongo.db.Transaction_block.find().sort([('index', -1)]).limit(1)
+    print(u1)
+    p = 0
+    for i in u1:
+        p = i['index']
+    print(p)
+    if lo_time1.date() == today.date() or p>1:
+        trans.pre_block(proof, previous_hash,p,values)
+        #Database.insert('Transaction_block', response)
+        #u1 = mongo.db.Transaction_block.find_one().sort('_id', pymongo.DESCENDING).limit(1)
+        '''response = {
+            'node_id': node_identifier,
+            'message': "Added To the Existing Block",
+            'index': u1['index'],
+            'transactions': block['transactions'],
+            'proof': u1['proof'],
+            'previous_hash': u1['previous_hash'],
+        }'''
 
-    response = {
-        'node_id': node_identifier,
-        'message': "New Block Forged",
-        'index': block['index'],
-        'transactions': block['transactions'],
-        'proof': block['proof'],
-        'previous_hash': block['previous_hash'],
-    }
-    Database.insert('Transaction_block', response)
-    flash("Added Successfully", category='success')
+        flash("Added Successfully", category='success')
+    else:
+        p = p + 1
+        block = trans.new_block(proof,p,previous_hash)
+        response = {
+            'node_id': node_identifier,
+            'message': "New Block Forged",
+            'index': block['index'],
+            'transactions': block['transactions'],
+            'proof': block['proof'],
+            'previous_hash': block['previous_hash'],
+        }
+        Database.insert('Transaction_block', block)
+        flash("Added Successfully", category='success')
 
     return make_response(user_profile(username))
 
@@ -641,6 +696,12 @@ def ecom_direct_template(username):
     return render_template('ecom.html', username=session['username'], posts=posts)
 
 
+@app.route('/ecom_direct1')
+def ecom_users_template():
+    posts = Ecom.from_all_ads()
+    return render_template('ecom.html', username=session['username'], posts=posts)
+
+
 @app.route('/ecom_details/<string:username>')
 @app.route('/ecom_details')
 def ecom_details_template(username):
@@ -690,21 +751,24 @@ def checkout_template(username):
                {"$group":{'_id':'$username', 'TotalAmount': {'$sum':'$price'}}}]
     result = list(db.cart.aggregate(pipline))
     print(result)
+    c = 0
     for x in result:
         #a = x.items()[0]
         print(x['TotalAmount'])
         amount = x['TotalAmount']
+        c = c+amount
+        print(c)
 
-    session['ammount'] = amount
+    session['ammount'] = c
     return render_template('process_out.html', username=session['username'], ammount=session['ammount'])
 
 
-@app.route('/final_checkout')
+@app.route('/final_checkout', methods=['POST'])
 def final_checkout():
     amount = request.form['amount']
     username = request.form['username']
     amount = int(amount)
-    a = db.cart.find({'username': username})
+    a = Database.find_one("cart",{'username':username})
     des = a['description']
     token = uuid4().hex
     type = request.form['type']
@@ -719,9 +783,10 @@ def final_checkout():
             col2.update_one({"username": username},
                             {"$inc": {"bal": -amount}},
                             upsert=False)
+            b = Database.find_one(collection='users', query={'username': username})
             Database.insert('Transaction_Normal',
                             {"token_id": token, "username": username, "email": user['email'], "amount": amount,
-                             "description": des, "date": lo_time})
+                             "description": a['description'],"current_balance":b['bal'], "date": lo_time})
             col1 = Database.DATABASE['cart']
             col1.update_one({"username": username},
                             {"$set": {"status": "Order Placed"}},
@@ -734,9 +799,9 @@ def final_checkout():
             Database.insert(collection='SCM', data={'username': username, 'ecom_id': b['_id'], 'address': b['address'],
                                                      "commodity_name": b['commodity_name'],"geolocation":geolocation,
                                                      'price': int(b['price']), 'description': b['description'],
-                                                     'image': b['image'], 'Quantity': b['quantity'],
+                                                     'image': b['image'], 'Quantity': b['Quantity'],
                                                      'date_purchased': lo_time, "status": "Order Place", 'seller': b['username']})
-            values = TransactionBlockchain.json(user.username, user._id, amount, des)
+            values = TransactionBlockchain.json(user['username'], user['_id'], amount, des)
             required = ['username', 'user_id', 'amount', 'description']
             if not all(k in values for k in required):
                 return 'Missing values', 400
@@ -858,20 +923,22 @@ def charge1():
 def scm_details_template(username):
     posts = [post for post in
                 Database.find(collection='SCM', query={'username': username})]
-    return render_template('scm_details.html', username=session['username'], posts=posts)
+    return render_template('scm_detail.html', username=session['username'], posts=posts)
 
 
-@app.route('/scm_details/<string:username>')
-@app.route('/scm_details')
+@app.route('/scm_track/<string:username>')
+@app.route('/scm_track')
 def scm_track_template(username):
-    scm = mongo.db.SCM.find_one({'username': username})
+    scm = mongo.db.SCM.find({'username': username})
+    print(scm)
     df2 = pd.DataFrame(list(scm))
-    m = folium.Map(location=[12.1, 74.6], tiles="OpenStreetMap", zoom_start=10)
+    print(df2)
+    m = folium.Map(location=[13, 77.7], tiles="OpenStreetMap", zoom_start=12)
     for i in range(len(df2)):
         icon_url = 'https://cdn1.iconfinder.com/data/icons/maps-locations-2/96/Geo2-Number-512.png'
         icon = folium.features.CustomIcon(icon_url, icon_size=(28, 30))
-        popup = folium.Popup(df2.iloc[i]['address'], parse_html=True)
-        folium.Marker([df2.iloc[i]['geolocation']], popup=popup, icon=icon).add_to(m)
+        popup = folium.Popup(df2.iloc[i]["address"], parse_html=True)
+        folium.Marker(df2.iloc[i]['geolocation'], popup=popup, icon=icon).add_to(m)
     m.save('templates/track.html')
     posts = [post for post in
                 Database.find(collection='SCM', query={'username': username})]
@@ -979,10 +1046,9 @@ def plot():
     p.add_tools(hover)
     x = data1['value']
     y = data1['rating']
-    p.vbar(x='y',top='x', color='red', width=0.5, source=source1)
+    p.vbar(x='y',top='x', color='green', width=0.5, source=source1)
     output_file('templates/map.html')
     save(p)
-
 
     b = db.test2.find({"Commodity Value":17})
     data2 = pd.DataFrame(list(b))

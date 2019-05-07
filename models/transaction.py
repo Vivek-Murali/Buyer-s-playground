@@ -11,13 +11,13 @@ class TransactionBlockchain(object):
         self.current_transactions = []
 
         # Create the genesis block
-        self.new_block(previous_hash=1, proof=100)
+        self.new_block(previous_hash=1, index=1,proof=100)
 
-    def new_block(self,proof, previous_hash=None):
+    def new_block(self,proof, index,previous_hash=None):
 
 
         block = {
-            'index': len(self.chain) + 1,
+            'index': index,
             'timestamp': time(),
             'transactions': self.current_transactions,
             'proof': proof,
@@ -30,7 +30,7 @@ class TransactionBlockchain(object):
         self.chain.append(block)
         return block
 
-    def new_transaction_asset(self, username, user_id,amount, description):
+    def new_transaction(self, username, user_id,amount, description):
 
 
         self.current_transactions.append({
@@ -88,10 +88,19 @@ class TransactionBlockchain(object):
         }
         return response
 
+    def pre_block(self, proof,previous_hash,index,transaction):
+        col1 = Database.DATABASE['Transaction_block']
+        col1.update_one({"index": index},
+                        {"$set": {'timestamp': time(),
+                                  "last": transaction,
+                                  "proof":proof,
+                                  'previous_hash': previous_hash or self.hash(self.chain[-1])},
+                        "$push":{'transactions':transaction}},
+                        upsert=True)
     @staticmethod
     def from_user_topic(username):
         return [post for post in
-                Database.find(collection='Transaction_Normal', query=({'username': username})).sort('date', pymongo.DESCENDING)]
+                Database.find(collection='Transaction_Normal', query=({'username': username})).sort('_id', pymongo.DESCENDING).limit(5)]
 
     @staticmethod
     def from_user_all():

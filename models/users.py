@@ -58,13 +58,13 @@ class User(object):
         return False
 
     @classmethod
-    def register(cls, email, username, password, first_name, last_name, gender, phone, picture,picture_name, likes,type,status,bal,dob,last_login,register_date):
+    def register(cls, email, username, password, first_name, last_name, gender, phone, picture,picture_name, likes,type,status,bal,dob,last_login,register_date,current_location):
         user = cls.get_by_username(username)
         if user is None:
             hashpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
             # User doesn't exist, so we can create it
             ''' Database.insert("users", {"email": email, "username": username, "password": hashpass, "first_Name": first_name, "last_name": last_name, "gender": gender, "phone": phone, "ava_hash":ava_hash})'''
-            new_user = cls(email, username, hashpass, first_name, last_name, gender, phone, picture,picture_name,likes, type,status,bal,dob,last_login,register_date)
+            new_user = cls(email, username, hashpass, first_name, last_name, gender, phone, picture,picture_name,likes, type,status,bal,dob,last_login,register_date,current_location)
             new_user.save_to_mongo()
             session['username'] = username
             return True
@@ -123,7 +123,8 @@ class User(object):
             "bal": self.bal,
             "dob": self.dob,
             "last_login":self.last_login,
-            "register_date":self.register_date
+            "register_date":self.register_date,
+            "current_location":self.current_location
         }
 
     def save_to_mongo(self):

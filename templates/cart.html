@@ -20,7 +20,7 @@
 
             <input type="hidden" id="auctionId" name="ecomId" value="{{post._id}}">
             <input type="hidden" id="username" name="username" value="{{username}}">
-           <p> <input type="checkbox" id="check" name="remove" value="{{post._id}}" required="required"><span style="color:blue; font-size:15pt; font-style:solid">Commodity Name:&nbsp;{{post.commodity_name}}</span><br><br>
+           <p> <input type="checkbox" id="check" name="remove" value="{{post._id}}"><span style="color:blue; font-size:15pt; font-style:solid">Commodity Name:&nbsp;{{post.commodity_name}}</span><br><br>
                 <img src="{{url_for('file',filename=post.image)}}" class="rounded float-left" alt="Lights" style="height:100px;width:100px;">
                  &nbsp;&nbsp;<span style="color:black; font-size:12pt; font-style:solid">Seller:&nbsp;{{post.seller}}</span><br>
                <span style="color:black; font-size:12pt; font-style:solid">&nbsp;&nbsp;Description:&nbsp;{{ post.description}}</span><br>

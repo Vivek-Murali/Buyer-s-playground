@@ -69,7 +69,7 @@ class Ecom(object):
         }
 
     def save_to_mongo(self):
-        Database.insert("auction", self.json1())
+        Database.insert("ecom", self.json1())
 
     def new_block(self,proof, previous_hash=None):
 
@@ -141,7 +141,8 @@ class Ecom(object):
 
     @staticmethod
     def from_all_ads():
-        yesterday = date.today() - timedelta(2)
+        #yesterday = date.today() - timedelta(2)
+        yesterday = date.today()
         yesterday = yesterday.strftime('%d-%m-%y')
         return [post for post in
                 Database.find(collection='ecom', query=({"created_date":yesterday}))]

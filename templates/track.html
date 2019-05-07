@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script>L_PREFER_CANVAS=false; L_NO_TOUCH=false; L_DISABLE_3D=false;</script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.4.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.4.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://rawcdn.githack.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css"/>
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    
+    <meta name="viewport" content="width=device-width,
+        initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>#map_d06d37a53dde44129b1239aab44082e5 {
+        position: relative;
+        width: 100.0%;
+        height: 100.0%;
+        left: 0.0%;
+        top: 0.0%;
+        }
+    </style>
+</head>
+<body>    
+    
+    <div class="folium-map" id="map_d06d37a53dde44129b1239aab44082e5" ></div>
+</body>
+<script>    
+    
+    
+        var bounds = null;
+    
+
+    var map_d06d37a53dde44129b1239aab44082e5 = L.map(
+        'map_d06d37a53dde44129b1239aab44082e5', {
+        center: [13, 77.7],
+        zoom: 12,
+        maxBounds: bounds,
+        layers: [],
+        worldCopyJump: false,
+        crs: L.CRS.EPSG3857,
+        zoomControl: true,
+        });
+
+
+    
+    var tile_layer_355743b76ec94c219563dc29f7a5bfde = L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+        "attribution": null,
+        "detectRetina": false,
+        "maxNativeZoom": 18,
+        "maxZoom": 18,
+        "minZoom": 0,
+        "noWrap": false,
+        "opacity": 1,
+        "subdomains": "abc",
+        "tms": false
+}).addTo(map_d06d37a53dde44129b1239aab44082e5);
+    
+        var marker_f019c4c93dbd49cda7ad60211408916a = L.marker(
+            [13.0120218, 77.6777817],
+            {
+                icon: new L.Icon.Default(),
+                }
+            ).addTo(map_d06d37a53dde44129b1239aab44082e5);
+        
+    
+
+                var custom_icon_7bb018663f2b4b608b0096da829071ea = L.icon({
+                    iconUrl: 'https://cdn1.iconfinder.com/data/icons/maps-locations-2/96/Geo2-Number-512.png',
+                    iconSize: [28,30],
+                    
+
+                    
+                    
+                    
+
+                    
+                    });
+                marker_f019c4c93dbd49cda7ad60211408916a.setIcon(custom_icon_7bb018663f2b4b608b0096da829071ea);
+            
+    
+            var popup_8a3f1083ae044c438306b8af19bdadee = L.popup({maxWidth: '100%'
+            
+            });
+
+            
+                var html_c65fdfdca956480cbcd8398b2059f009 = $(`<div id="html_c65fdfdca956480cbcd8398b2059f009" style="width: 100.0%; height: 100.0%;">Ramamurthy Nagar Bengaluru  </div>`)[0];
+                popup_8a3f1083ae044c438306b8af19bdadee.setContent(html_c65fdfdca956480cbcd8398b2059f009);
+            
+
+            marker_f019c4c93dbd49cda7ad60211408916a.bindPopup(popup_8a3f1083ae044c438306b8af19bdadee)
+            ;
+
+            
+        
+    
+        var marker_29888d9d30d34a9cb3957c20161d2917 = L.marker(
+            [13.0120218, 77.6777817],
+            {
+                icon: new L.Icon.Default(),
+                }
+            ).addTo(map_d06d37a53dde44129b1239aab44082e5);
+        
+    
+
+                var custom_icon_a137317755294b9588137e5c39c3bcea = L.icon({
+                    iconUrl: 'https://cdn1.iconfinder.com/data/icons/maps-locations-2/96/Geo2-Number-512.png',
+                    iconSize: [28,30],
+                    
+
+                    
+                    
+                    
+
+                    
+                    });
+                marker_29888d9d30d34a9cb3957c20161d2917.setIcon(custom_icon_a137317755294b9588137e5c39c3bcea);
+            
+    
+            var popup_e1c5c9befb234261a313d073d299ca4c = L.popup({maxWidth: '100%'
+            
+            });
+
+            
+                var html_e273907aa69747fdba6b5217fb615512 = $(`<div id="html_e273907aa69747fdba6b5217fb615512" style="width: 100.0%; height: 100.0%;">Ramamurthy Nagar Bengaluru  </div>`)[0];
+                popup_e1c5c9befb234261a313d073d299ca4c.setContent(html_e273907aa69747fdba6b5217fb615512);
+            
+
+            marker_29888d9d30d34a9cb3957c20161d2917.bindPopup(popup_e1c5c9befb234261a313d073d299ca4c)
+            ;
+
+            
+        
+</script>
