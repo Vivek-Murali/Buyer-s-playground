@@ -44,36 +44,18 @@
     <div class="col-xs-4" style="border-right:1px solid;">
 <div class="nav">
     <ul style="list-style-type:none; font-size:24px; display:block;">
+         {% if session['type'] == 4 %}
+        <li ><a href="#section-admin" style="color:black;">Admin Announcements</a></li>
+        {% else %}
         <li ><a href="#section-london" style="color:black;">General Announcements</a></li>
         <li ><a href="#section-admin" style="color:black;">Admin Announcements</a></li>
         <li><a href="#section-paris" style="color:black;">Auction Announcements</a></li>
         <li><a href="#section-request" style="color:black;">Other Requests</a></li>
+        {% endif %}
     </ul>
 </div>
     </div>
      <div class="col-xs-8">
-<div id="section-london" class="tab-content">
-
-    <form class="form-group" action="/new_post/{{username}}" method="post" enctype="multipart/form-data">
-        	<input type="text" id="content" class="form-control" name="content" placeholder="Announcement" required="required">
-        <br>
-        <button type="submit" class="btn btn-success btn-lg btn-block" style="width:20%;">Submit</button>
-        <br>
-        <br>
-        {% if posts|length > 0 %}
-            {% for post in posts %}
-            <img src="{{url_for('file',filename=post.picture)}}" alt="Lights" style="height:70px;width:100%;" align="center">
-              <h4> Announcement by {{ post.username}}</h4>
-              <p class="fg-gray">{{post.date_posted}}</p>
-                {{ post.message}}
-
-                {% endfor %}
-                {% else %}
-            <h4 class="text-center">There aren't any posts yet!</h4>
-            {% endif %}
-
-    </form>
-</div>
          <div id="section-admin" class="tab-content">
 {% if session['username'] == 'Admin' %}
     <form class="form-group" action="/new_post/{{username}}" method="post" enctype="multipart/form-data">
@@ -107,6 +89,28 @@
             {% endif %}{% endif %}
 
 
+</div>
+<div id="section-london" class="tab-content">
+
+    <form class="form-group" action="/new_post/{{username}}" method="post" enctype="multipart/form-data">
+        	<input type="text" id="content" class="form-control" name="content" placeholder="Announcement" required="required">
+        <br>
+        <button type="submit" class="btn btn-success btn-lg btn-block" style="width:20%;">Submit</button>
+        <br>
+        <br>
+        {% if posts|length > 0 %}
+            {% for post in posts %}
+            <img src="{{url_for('file',filename=post.picture)}}" alt="Lights" style="height:70px;width:100%;" align="center">
+              <h4> Announcement by {{ post.username}}</h4>
+              <p class="fg-gray">{{post.date_posted}}</p>
+                {{ post.message}}
+
+                {% endfor %}
+                {% else %}
+            <h4 class="text-center">There aren't any posts yet!</h4>
+            {% endif %}
+
+    </form>
 </div>
          <div id="section-request" class="tab-content">
 

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+<br/>
+    <br/>
+<div class="row">
+
+        <form  id="new-blog" action="/list_product1" method="post" enctype="multipart/form-data">
+            <div class="form-group row">
+            <label for="name">UserName</label>
+            <input type="text" id="name" class="form-control" name="name">
+            <div class="form-group">
+                <h4 align="center">Or</h4>
+              <label for="comname">Name of the Commodity</label>
+        	<select class="form-control" id="comname" name="name">
+                <option value="0" selected>Select a Value</option>
+                <option value="Sugarcane">Sugarcane</option>
+                <option value="Jaggery">Jaggery</option>
+                <option value="Carrot">Carrot</option>
+                <option value="Cabbage">Cabbage</option>
+                <option value="Apple">Apple</option>
+</select>
+        </div>
+            </div>
+        <button type="submit" class="btn btn-success">Search</button>
+    </form>
+        <table align="center">
+            {% for u in lists %}
+            <tr>
+      <th style="text-align:center;">Commodity Name</th>
+      <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+      <th style="text-align:center;">Commodity Value</th>
+            <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">Picture</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+       <th style="text-align:center;">Avg Ratings</th>
+                 <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th style="text-align:center;">Avg Amount Spent</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+                <th> &nbsp;</th>
+      </tr>
+
+                <tr>
+
+                    <td style="text-align:center;"><p>{{u.commodity}}</p></td>
+      <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><p>{{u.value}}</p></td>
+                     <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;"><p>{{u.picture}}</p></td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.rating}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+                    <td style="text-align:center;">{{u.ammount_spent}}</td>
+                    <td> &nbsp;</td><td> &nbsp;</td><td> &nbsp;</td>
+      </tr>
+            {% endfor %}
+
+
+            </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<br>
+    <div class="container">
+        <div class="row">
+    <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    <div class="col-md-4 col-sm-4 col-xs-12">
+    <form class="form-container" action="/admin_reg" method="post" enctype="multipart/form-data">
+		<h2>Create New User</h2>
+        <div class="form-group">
+			<div class="row">
+				<div class="col-xs-6"><label for="user">First name</label><input type="text" id="first_name" class="form-control" name="first_name" placeholder="First Name" required="required"></div>
+				<div class="col-xs-6"><label for="user">Last name</label><input type="text" id="last_name" class="form-control" name="last_name" placeholder="Last Name" required="required"></div>
+			</div>
+        </div>
+         <div class="form-group">
+              <label for="user">Username</label>
+        	<input type="text" id="username" class="form-control" name="username" placeholder="Username" required="required">
+        </div>
+        <div class="form-group">
+             <label for="exampleInputEmail1">Email</label>
+        	<input type="email" id="email" class="form-control" name="email" placeholder="Email" required="required">
+        </div>
+        <div class="form-group">
+
+            <label>Date of Birth</label>
+            <input type="text" id="datepicker" class="form-control" name="date" required="required" placeholder="Date of Birth">
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender :</label>
+            <label>
+            <input type="radio" name="gender" id="optionsRadios1" value="Male" required="required">
+            Male
+           </label>
+           <label>
+           <input type="radio" name="gender" id="optionsRadios2" value="Female" required="required">
+           Female
+          </label>
+        </div>
+
+        <div class="form-group">
+            <label for="mob">Mobile no</label>
+        	<input type="text" id="mobile" class="form-control" name="mobile" placeholder="Mobile Number" required="required">
+        </div>
+
+		<div class="form-group">
+            <label for="pass">Password</label>
+            <input type="password" id="password" class="form-control" name="password" placeholder="Password" required="required">
+        </div>
+		<div class="form-group">
+            <label for="pass">Confirm Password</label>
+            <input type="password" id="confirm_password" class="form-control" name="confirm_password" placeholder="Confirm Password" required="required">
+        </div>
+        <div class="form-group">
+            <label for="type">Type</label>
+            <input type="text" id="type" class="form-control" name="type" placeholder="Type" required="required">
+        </div>
+
+        <div class="form-group">
+            <label for="pass">Photo</label>
+            <input type="file" id="file" class="form-control" name="file" placeholder="Photo" required="required", accept="image/*">
+        </div>
+
+            <button type="submit" class="btn btn-success btn-lg btn-block">Create Now</button>
+    </form>
+    </div>
+        <div class="col-md-4 col-sm-4 col-xs-12"></div>
+    </div>
+    </div>
+    <script>
+   $( "#datepicker" ).datepicker({
+     changeMonth: true,
+     changeYear: true,
+     yearRange: "1930:2000"
+ });
+     </script>
+
+{% endblock %}

@@ -71,7 +71,7 @@
                 <tr><th style="text-align:center;">Username</th><th>&nbsp;</th><th style="text-align:center;">Description</th><th style="text-align:center;">Date</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Action</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Status</th></tr>
             {% if posts|length > 0 %}
             {% for post in posts1 %}
-                <tr><td style="text-align:center;"><b>{{ post1._id}}</b></td><td>&nbsp;</td><td style="text-align:center;"><p>{{post1.current_bid}}</p></td><td style="text-align:center;"><b>{{post1.created_date}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><a href="/accept_bid/{{post1.username}}" style="color:green;"><b>Approve</b></a>&nbsp;&nbsp;<a href="#" style="color:blue;"><b>Check</b></a></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.status}}</b></td></tr>&nbsp;&nbsp;
+                <tr><td style="text-align:center;"><b>{{ post._id}}</b></td><td>&nbsp;</td><td style="text-align:center;"><p>{{post.current_bid}}</p></td><td style="text-align:center;"><b>{{post.created_date}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><a href="/accept_bid/{{post.username}}" style="color:green;"><b>Approve</b></a>&nbsp;&nbsp;<a href="#" style="color:blue;"><b>Check</b></a></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.status}}</b></td></tr>&nbsp;&nbsp;
                 {% endfor %}
                 {% else %}
             {% endif %}

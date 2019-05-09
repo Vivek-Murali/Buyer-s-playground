@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block page %}{{title}}{% endblock %}
+{% block heading %}
+  {{ super() }}
+<style>
+    .header {
+    background-color:black;
+    color:white;
+    text-align:center;
+    padding:5px;
+}
+.nav {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:300px;
+    width:100px;
+    float:left;
+    padding:5px;
+}
+.active {
+    font-weight:bold;
+}
+.section {
+    width:350px;
+    float:left;
+    padding:10px;
+}
+.footer {
+    background-color:black;
+    color:white;
+    clear:both;
+    text-align:center;
+    padding:5px;
+}
+</style>
+{% endblock %}
+{% block content %}
+<br>
+<div class="row" style="height:450px;">
+    <div class="col-xs-4" style="border-right:1px solid;">
+<div class="nav">
+    <ul style="list-style-type:none; font-size:24px; display:block;">
+        <li ><a href="#section-london" style="color:black;">Order Placed</a></li>
+        <li ><a href="#section-paris" style="color:black;">Transit</a></li>
+        <li ><a href="#section-NY" style="color:black;">Out For Delivery</a></li>
+    </ul>
+</div>
+    </div>
+     <div class="col-xs-8">
+<div id="section-london" class="tab-content">
+            <div align="center">
+            <table align="center">
+                <tr><th style="text-align:center;">Delivery Id</th><th>&nbsp;</th><th style="text-align:center;">Username</th><th>&nbsp;</th><th style="text-align:center;">Address</th><th style="text-align:center;">Date</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Action</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Seller</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Status</th></tr>
+            {% if posts|length > 0 %}
+            {% for post in posts %}
+                <tr><td style="text-align:center;"><b>{{ post.ecom_id}}</b></td><td>&nbsp;</td><td style="text-align:center;"><b>{{ post.username}}</b></td><td>&nbsp;</td><td style="text-align:center;"><p>{{post.address}}</p></td><td style="text-align:center;"><b>{{post.date}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;">
+                    <form action="/log_details1" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="ecomId" name="ecomId" value="{{post.ecom_id}}">
+                    <input type="hidden" id="loc" name="loc" value="me">
+                    <select class="form-control" id="comname" name="name">
+                <option value="Transit" selected>Transit</option>
+                <option value="Order Dispatched">Order Dispatched</option>
+                <option value="Out For Delivery">Out For Delivery</option>
+                    </select><button type="submit" class="btn btn-success">Submit</button></form></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.seller}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.status}}</b></td></tr>&nbsp;&nbsp;
+                {% endfor %}
+                {% else %}
+            {% endif %}
+            </table></div>
+</div>
+<div id="section-paris" class="tab-content">
+            <div align="center">
+            <table align="center">
+                <tr><th style="text-align:center;">Delivery Id</th><th>&nbsp;</th><th style="text-align:center;">Username</th><th>&nbsp;</th><th style="text-align:center;">Address</th><th style="text-align:center;">Date</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Action</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Seller</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Status</th></tr>
+            {% if posts|length > 0 %}
+            {% for post in posts1 %}
+                <tr><td style="text-align:center;"><b>{{ post.ecom_id}}</b></td><td>&nbsp;</td><td style="text-align:center;"><b>{{ post.username}}</b></td><td>&nbsp;</td><td style="text-align:center;"><p>{{post.address}}</p></td><td style="text-align:center;"><b>{{post.date}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;">
+                    <form action="/log_details1" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="ecom1Id" name="ecomId" value="{{post._id}}">
+                    <input type="hidden" id="loc1" name="loc" value="me">
+                    <select class="form-control" id="comname1" name="name">
+                <option value="Transit" selected>Transit</option>
+                <option value="Out For Delivery">Out For Delivery</option>
+                    </select><button type="submit" class="btn btn-success">Submit</button></form></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.seller}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.status}}</b></td></tr>&nbsp;&nbsp;
+                {% endfor %}
+                {% else %}
+            {% endif %}
+            </table></div>
+</div>
+         <div id="section-NY" class="tab-content">
+            <div align="center">
+            <table align="center">
+                <tr><th style="text-align:center;">Delivery Id</th><th>&nbsp;</th><th style="text-align:center;">Username</th><th>&nbsp;</th><th style="text-align:center;">Address</th><th style="text-align:center;">Date</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Action</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Seller</th><th>&nbsp;&nbsp;&nbsp;&nbsp;</th><th style="text-align:center;">Status</th></tr>
+            {% if posts|length > 0 %}
+            {% for post in posts2 %}
+                <tr><td style="text-align:center;"><b>{{ post.ecom_id}}</b></td><td>&nbsp;</td><td style="text-align:center;"><b>{{ post.username}}</b></td><td>&nbsp;</td><td style="text-align:center;"><p>{{post.address}}</p></td><td style="text-align:center;"><b>{{post.date}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;">
+                    <form action="/log_details1" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="ecom1Id2" name="ecomId" value="{{post._id}}">
+                    <input type="hidden" id="loc2" name="loc" value="me">
+                    <select class="form-control" id="comname2" name="name">
+                <option value="Out For Delivery" selected>Out For Delivery</option>
+                        <option value="Out For Delivery">Delivered</option>
+                    </select><button type="submit" class="btn btn-success">Submit</button></form></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.seller}}</b></td><td>&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="text-align:center;"><b>{{ post.status}}</b></td></tr>&nbsp;&nbsp;
+                {% endfor %}
+                {% else %}
+            {% endif %}
+            </table></div>
+</div>
+</div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+    $('.nav ul li:first').addClass('active');
+    $('.tab-content:not(:first)').hide();
+    $('.nav ul li a').click(function (event) {
+        event.preventDefault();
+        var content = $(this).attr('href');
+        $(this).parent().addClass('active');
+        $(this).parent().siblings().removeClass('active');
+        $(content).show();
+        $(content).siblings('.tab-content').hide();
+    });
+});
+</script>
+{% endblock %}
+

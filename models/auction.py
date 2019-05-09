@@ -144,7 +144,7 @@ class Auction(object):
         yesterday = date.today() - timedelta(1)
         yesterday = yesterday.strftime('%d-%m-%y')
         return [post for post in
-                Database.find(collection='auction', query=({"created_date":yesterday}))]
+                Database.find(collection='auction', query=({}))]
 
     @staticmethod
     def from_user_profile(username):

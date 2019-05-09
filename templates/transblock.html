@@ -10,9 +10,12 @@
 {% block content %}
 <div class="container">
     <br>
-    <h2 align="center" style="text-aline:center; font-family: Rockwell">Orders</h2>&nbsp;
+    <h2 align="center" style="text-aline:center; font-family: Rockwell">Transaction Block</h2>&nbsp;
     <br>
-    <input id="ccNo" type="text" size="20" value="{{response}}" placeholder="Card Number" name="cno"  required />
+    <h5 align="center" style="text-aline:center; font-family: Rockwell">Present Block Hash :{{present}}</h5>
+    <h5 align="center" style="text-aline:center; font-family: Rockwell">Number of Blocks in Chain :{{blocks}}</h5>
+    <textarea class="form-control" rows="5" id="des1" name="description">{{response}}</textarea>
+    <h4 align="center" style="text-aline:center; font-family: Rockwell">Full Chain JSON View</h4>
      {% if posts|length > 0 %}
             {% for post in posts %}
      <div class="col-md-9 col-md-offset-1 well" style="background-color: white">

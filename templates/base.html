@@ -73,7 +73,10 @@
               {% if session['username'] == 'Admin' %}
               {{ nav_link('admin_home', 'Home') }}
               {% else %}
-            {{ nav_link('user_home', 'Home') }}
+              {% if session['type'] == 4 %}
+              {{ nav_link('log_home', 'Home') }}
+              {% else %}
+            {{ nav_link('user_home', 'Home') }}{% endif %}
               {% endif %}
               {% else %}
                {{ nav_link('index_template1', 'Home') }}
@@ -95,6 +98,8 @@
               <li><a href="/admin_request">Requests & Reports</a></li>
               <li><a href="/fetch_temp">Data Request</a></li>
               {% else %}
+              {% if session['type'] == 4 %}
+              {% else %}
               {% if session['type'] == "3" %}
                <li><a href="/auction_home">Auctions</a></li>
               {% else %}
@@ -102,7 +107,7 @@
               {% endif %}
               <li><a href="/User_profile/{{ username }}">{{username}}</a></li>
                     <li><a href="/cart/{{username}}">Your Cart</a></li>
-                 <li><a href="/assets/{{username}}">Assets</a></li>
+                 <li><a href="/assets/{{username}}">Assets</a></li>{% endif %}
               {% endif %}
 
                     {{ nav_link('logout_user', 'Sign Out') }}

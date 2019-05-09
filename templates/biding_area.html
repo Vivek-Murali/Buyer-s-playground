@@ -12,12 +12,13 @@
     <br>
     <h2 align="center" style="text-aline:center; font-family: Rockwell">Auction Items</h2>&nbsp;
     <br>
+    Only <i class="fa fa-clock-o" style="font-size:24px"></i> <span id='time'></span> left!
     <form  action="/bids" method="post" enctype="multipart/form-data">
      {% if posts|length > 0 %}
             {% for post in posts %}
      <div>
             <hr>
-            Only <i class="fa fa-clock-o" style="font-size:24px"></i> <span id='time'></span> left!
+
             <input type="hidden" id="auctionId" name="auctionId" value="{{post._id}}">
             <input type="hidden" id="username" name="username" value="{{username}}">
            <p><span style="color:blue; font-size:15pt; font-style:solid">Commodity Name:&nbsp;{{post.commodity_name}}</span><br><br>
@@ -32,8 +33,9 @@
 
                       {% else %}
                 <button  id="Button" class="btn" data-toggle="modal" data-target="#myModal">Bid</button>
+         <a href=""></a>
                 {% endif %}
-         {% endfor %}</div>
+         </div>{% endfor %}
         <hr>
                 {% else %}
             <h4 class="text-center">There aren't any posts yet!</h4>
@@ -48,8 +50,8 @@
 (function() {
   var start = new Date;
   var end = new Date;
-  start.setHours(15, 0, 0);
-  end.setHours(23,2,0);
+  start.setHours(4, 0, 0);
+  end.setHours(16,2,0);
 
   function pad(num) {
     return ("0" + parseInt(num)).substr(-2);

@@ -116,6 +116,9 @@ def register_user():
         return make_response(register_template())
     else:
         mongo.save_file(filename, photo)
+        Database.insert('Transaction_Normal',
+                        {"token_id": 1, "username": username, "email": email, "amount": 0,
+                         "description": "", "current_balance": 0, "date": lo_time})
         User.register(email, username, password, first_name, last_name, gender, phone, picture, filename, likes, type,status,bal,date,lo_time,re_time,current_location)
         u = Database.find_one('users', {'username': username})
         with app.app_context():
@@ -172,9 +175,126 @@ def list_products():
     return render_template("list-products.html", username=session['username'], lists=lists)
 
 
+@app.route('/list_product1',methods=['POST'])
+def list_products1():
+    name = request.form['name']
+    if name == 'All':
+        lists = [post for post in
+                 Database.find(collection='products', query={})]
+        print(lists)
+    else:
+        lists = [post for post in Database.find(collection='products', query={'commodity':name})]
+        print(lists)
+    return render_template("all_products_users.html", username=session['username'], lists=lists)
+
+
+@app.route('/list_products_users_temp')
+def list_users_products_temp():
+    return render_template('all_products_users.html', username=session['username'])
+
+
+@app.route('/log_details')
+def SCM_req():
+    posts = [post for post in
+     Database.find(collection='SCM', query={'status':'Order Place'}).sort('date_posted', pymongo.DESCENDING)]
+    posts1 = [post for post in
+     Database.find(collection='SCM', query={'status':'Transit'}).sort('created_date', pymongo.DESCENDING)]
+    posts2 = [post for post in
+              Database.find(collection='SCM', query={'status':'Out for Delivery'}).sort('created_date', pymongo.DESCENDING)]
+    return render_template('log_details.html', posts=posts,posts1=posts1,posts2=posts2,username=session['username'])
+
+
+@app.route('/log_details1', methods=['POST'])
+def log_details1():
+    name = request.form['name']
+    ecom_id = request.form['ecomId']
+    location = request.form['loc']
+    loc = geocoder.ip(location)
+    location = loc.latlng
+    col1 = Database.DATABASE['SCM']
+    col1.update_one({"ecom_id": ObjectId(ecom_id)},
+                    {"$set": {"status": name,"geolocation":location}},
+                    upsert=False)
+    col2 = Database.DATABASE['cart']
+    col2.update_one({"ecom_id": ObjectId(ecom_id)},
+                    {"$set": {"status": name}},
+                    upsert=False)
+    flash("Updated Successfully", category='success')
+    return make_response(scm_home())
+
+
+@app.route('/home_scm')
+def scm_home():
+    return render_template('home_logistics.html', username=session['username'])
+
+
+@app.route('/details_scm')
+def details_scm():
+    return render_template('details_scm.html', username=session['username'])
+
+
+@app.route('/details_scm1',methods=['POST'])
+def details_scm1():
+    name = request.form['name']
+    if name == 'All':
+        lists = [post for post in
+                 Database.find(collection='SCM', query={})]
+        print(lists)
+    else:
+        lists = [post for post in Database.find(collection='SCM', query={'username':name})]
+        print(lists)
+    return render_template("details_scm.html", username=session['username'], lists=lists)
+
+
 @app.route('/list_users_temp')
 def list_users_temp():
     return render_template('all_users.html', username=session['username'])
+
+
+@app.route('/users_create_temp')
+def create_users_temp():
+    return render_template('user_create.html', username=session['username'])
+
+
+@app.route('/admin_reg', methods=['POST'])
+def admin_user_create():
+    email = request.form['email']
+    username = request.form['username']
+    password = request.form['password']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    gender = request.form['gender']
+    phone = request.form['mobile']
+    photo = request.files['file']
+    date = request.form['date']
+    likes = None
+    type = int(request.form['type'])
+    bal = 0
+    status = ""
+    lo_time1 = datetime.datetime.now()
+    lo_time = lo_time1.strftime('%d-%m-%y %H:%M')
+    re_time1 = datetime.datetime.now()
+    re_time = re_time1.strftime('%d-%m-%y %H:%M')
+    filename = uuid4().hex + photo.filename
+    picture = hashlib.md5(email.lower().encode('utf-8')).hexdigest()
+    user = User.get_by_username(username)
+    emailval = User.get_by_email(email)
+    current_location = 0
+    if user is not None or emailval is not None:
+        flash("Username or Email taken", category='warning')
+        return make_response(register_template())
+    else:
+        mongo.save_file(filename, photo)
+        User.register(email, username, password, first_name, last_name, gender, phone, picture, filename, likes, type,status,bal,date,lo_time,re_time,current_location)
+        u = Database.find_one('users', {'username': username})
+        with app.app_context():
+            msg = Message(sender=app.config.get("MAIL_USERNAME"), recipients=[u['email']])
+            msg.subject = "Buyer's plyground New Employee Created"
+            msg.body = """Hello """+username+""",
+            Welcome to Buyer's plyground"""
+            mail.send(msg)
+        flash("Created Successfully", category='success')
+        return make_response(list_users_temp())
 
 
 @app.route('/list_insurance_temp')
@@ -188,19 +308,17 @@ def user_profile(username):
     posts = TransactionBlockchain.from_user_topic(username)
     b = db.Transaction_Normal.find({"username": username})
     data2 = pd.DataFrame(list(b))
-    print(data2)
-    print(data2['date'])
     data2['date'] = pd.to_datetime(data2['date'], dayfirst=True,infer_datetime_format=True)
     #data2['date'] = data2['date'].dt.date
     print(data2['date'])
     source2 = bokeh.plotting.ColumnDataSource(
-        data={'x': data2['date'], 'y': data2['current_balance'], 'desc': data2['description']})
+    data={'x': data2['date'], 'y': data2['current_balance'], 'desc': data2['description']})
     TOOLTIPS = [
-        ('Amount', '@y'),
-    ]
+    ('Amount', '@y'),
+        ]
     hover = HoverTool(
-        tooltips=TOOLTIPS,
-    )
+    tooltips=TOOLTIPS,
+        )
     p = figure(y_axis_label='Amount in Rs', x_axis_label='Date', plot_width=700, plot_height=200,x_axis_type='datetime')
     p.add_tools(hover)
     x = data2['date']
@@ -357,6 +475,7 @@ def charge():
     return make_response(user_profile(username))
 
 
+
 @app.route('/insurance')
 def insurance_template():
     return render_template("insurance.html", username=session['username'])
@@ -404,6 +523,13 @@ def user_template_all():
     else:
         lists = [post for post in Database.find(collection='users', query={'username': name})]
     return render_template("all_users.html", username=session['username'], lists=lists)
+
+
+@app.route('/remove_user/<string:username>')
+def remove_user(username):
+    db.users.delete_one({'username': username})
+    flash("User Deleted", category='danger')
+    return make_response(list_users_temp())
 
 
 @app.route('/edit_profile_admin', methods=['POST'])
@@ -464,7 +590,7 @@ def login_user():
     if user['type'] == 2:
         return render_template("Admin_home.html", username=session['username'], user=user)
     elif user['type'] == 4:
-        return render_template("home_logistic.html", username=session['username'], user=user)
+        return render_template("home_logistics.html", username=session['username'], user=user)
     else:
         return render_template("home.html", username=session['username'], user=user,)
 
@@ -478,6 +604,11 @@ def logout_user():
 @app.route('/file/<filename>')
 def file(filename):
     return mongo.send_file(filename)
+
+
+@app.route('/log_home')
+def log_home():
+    return render_template('home_logistics.html',username=session['username'])
 
 
 @app.route('/anno')
@@ -765,6 +896,7 @@ def checkout_template(username):
 
 @app.route('/final_checkout', methods=['POST'])
 def final_checkout():
+    trans = TransactionBlockchain()
     amount = request.form['amount']
     username = request.form['username']
     amount = int(amount)
@@ -809,23 +941,44 @@ def final_checkout():
                                                       values['amount'], values['description'])
             response = {'message': f'Transaction will be added to Block {index}'}
             result = jsonify(response)
-            last_block = ablockchain.last_block
+            last_block = trans.last_block
             last_proof = last_block['proof']
-            proof = ablockchain.proof_of_work(last_proof)
+            proof = trans.proof_of_work(last_proof)
 
             # Forge the new Block by adding it to the chain
-            previous_hash = blockchain.hash(last_block)
-            block = ablockchain.new_block(proof, previous_hash)
-
-            response = {
-                'node_id': node_identifier,
-                'message': "New Block Forged",
-                'index': block['index'],
-                'transactions': block['transactions'],
-                'proof': block['proof'],
-                'previous_hash': block['previous_hash'],
-            }
-            Database.insert('Transaction_block', response)
+            previous_hash = trans.hash(last_block)
+            lo_time1 = datetime.datetime.now()
+            today = datetime.datetime.today()
+            u1 = mongo.db.Transaction_block.find().sort([('index', -1)]).limit(1)
+            print(u1)
+            p = 0
+            for i in u1:
+                p = i['index']
+            print(p)
+            if lo_time1.date() == today.date() or p > 1:
+                trans.pre_block(proof, previous_hash, p, values)
+                # Database.insert('Transaction_block', response)
+                # u1 = mongo.db.Transaction_block.find_one().sort('_id', pymongo.DESCENDING).limit(1)
+                '''response = {
+                    'node_id': node_identifier,
+                    'message': "Added To the Existing Block",
+                    'index': u1['index'],
+                    'transactions': block['transactions'],
+                    'proof': u1['proof'],
+                    'previous_hash': u1['previous_hash'],
+                }'''
+            else:
+                p = p + 1
+                block = trans.new_block(proof, p, previous_hash)
+                response = {
+                    'node_id': node_identifier,
+                    'message': "New Block Forged",
+                    'index': block['index'],
+                    'transactions': block['transactions'],
+                    'proof': block['proof'],
+                    'previous_hash': block['previous_hash'],
+                }
+                Database.insert('Transaction_block', block)
             flash("Order Placed", category='success')
             return make_response(user_profile(username))
         else:
@@ -841,6 +994,7 @@ def final_checkout():
 @app.route('/charge1', methods=['POST'])
 def charge1():
     # Amount in cents
+    trans = TransactionBlockchain()
     amount = int(session['money'])
     username = session['username']
     card_number = request.form['cno']
@@ -896,23 +1050,46 @@ def charge1():
                                               values['amount'], values['description'])
     response = {'message': f'Transaction will be added to Block {index}'}
     result = jsonify(response)
-    last_block = ablockchain.last_block
+    last_block = trans.last_block
     last_proof = last_block['proof']
-    proof = ablockchain.proof_of_work(last_proof)
+    proof = trans.proof_of_work(last_proof)
 
     # Forge the new Block by adding it to the chain
-    previous_hash = blockchain.hash(last_block)
-    block = ablockchain.new_block(proof, previous_hash)
+    previous_hash = trans.hash(last_block)
+    lo_time1 = datetime.datetime.now()
+    today = datetime.datetime.today()
+    u1 = mongo.db.Transaction_block.find().sort([('index', -1)]).limit(1)
+    print(u1)
+    p = 0
+    for i in u1:
+        p = i['index']
+    print(p)
+    if lo_time1.date() == today.date() or p > 1:
+        trans.pre_block(proof, previous_hash, p, values)
+        # Database.insert('Transaction_block', response)
+        # u1 = mongo.db.Transaction_block.find_one().sort('_id', pymongo.DESCENDING).limit(1)
+        '''response = {
+            'node_id': node_identifier,
+            'message': "Added To the Existing Block",
+            'index': u1['index'],
+            'transactions': block['transactions'],
+            'proof': u1['proof'],
+            'previous_hash': u1['previous_hash'],
+        }'''
 
-    response = {
-        'node_id': node_identifier,
-        'message': "New Block Forged",
-        'index': block['index'],
-        'transactions': block['transactions'],
-        'proof': block['proof'],
-        'previous_hash': block['previous_hash'],
-    }
-    Database.insert('Transaction_block', response)
+        flash("Added Successfully", category='success')
+    else:
+        p = p + 1
+        block = trans.new_block(proof, p, previous_hash)
+        response = {
+            'node_id': node_identifier,
+            'message': "New Block Forged",
+            'index': block['index'],
+            'transactions': block['transactions'],
+            'proof': block['proof'],
+            'previous_hash': block['previous_hash'],
+        }
+        Database.insert('Transaction_block', block)
     flash("Order Placed", category='success')
 
     return make_response(user_profile(username))
@@ -1023,9 +1200,31 @@ def auction_req_template():
 
 @app.route('/transblock')
 def transblock_template():
-    response = TransactionBlockchain.full_trans_chain()
+    trans = TransactionBlockchain()
+    block =[]
+
+    u1 = mongo.db.Transaction_block.find().sort([('index', -1)]).limit(1)
+    print(u1)
+    p = 0
+    for i in u1:
+        p = i['proof']
+    print(p)
+    u3 = mongo.db.Transaction_block.find().sort([('index', -1)]).limit(1)
+    q = 0
+    for j in u3:
+        q = j['index']
+    print(q)
+    last_proof = p
+    proof = trans.proof_of_work(last_proof)
+    # Forge the new Block by adding it to the chain
+    pre = Database.find_one('Transaction_block',({'index':q}))
+    print(pre)
+    u2 = TransactionBlockchain.from_user_all()
+    print(u2)
+    preset_hash = trans.hash(str(pre))
+    blocks = len(u2)
     posts = TransactionBlockchain.from_user_all()
-    return render_template('transblock.html', username=session['username'], response=response, posts=posts)
+    return render_template('transblock.html', username=session['username'], response=pre, posts=posts, present=preset_hash, blocks=blocks)
 
 
 @app.route('/plot')
@@ -1074,15 +1273,13 @@ def plot():
     output_file('templates/map1.html')
     save(p)
 
-    b = db.test2.find({"Commodity Value = 154":154})
+    b = db.test2.find({"Commodity Value":154})
     data2 = pd.DataFrame(list(b))
-    print(data2)
-    print(data2['Market'])
     data2['Arrival Date'] = pd.to_datetime(data2['Arrival Date'], format="%d/%m/%Y")
     data2['Arrival Date'] = data2['Arrival Date'].dt.date
     print(data2['Arrival Date'])
     source3 = bokeh.plotting.ColumnDataSource(
-            data={'x': data2['Arrival Date'], 'y': data2['Modal Price'], 'desc1': data2['Market']})
+            data={'x': data2['Arrival Date'], 'y': data2['Modal Price']})
     TOOLTIPS = [
             ('Price', '@y'),
         ]
@@ -1097,6 +1294,8 @@ def plot():
     p.cross(x, y, size=15)
     output_file('templates/map2.html')
     save(p)
+
+    MlModel.time_series()
     return render_template("plot.html", username=session['username'])
 
 
@@ -1120,12 +1319,14 @@ def asset_template():
 
 @app.route('/assets_template', methods=['POST', 'GET'])
 def create_new_asset():
+    trans = TransactionBlockchain()
     if request.method == 'GET':
         return render_template('assets.html')
     else:
         description = request.form['description']
         file1 = request.files['file']
         user = User.get_by_username(session['username'])
+
         values = AssetsBlockchain.json(user.username,user._id,file1.filename,description)
         # Check that the required fields are in the POST'ed data
         required = ['username', 'user_id','filename','description']
@@ -1137,23 +1338,47 @@ def create_new_asset():
                                                   values['filename'], values['description'])
         response = {'message': f'Transaction will be added to Block {index}'}
         result = jsonify(response)
-        last_block = ablockchain.last_block
+        last_block = trans.last_block
         last_proof = last_block['proof']
-        proof = ablockchain.proof_of_work(last_proof)
+        proof = trans.proof_of_work(last_proof)
 
         # Forge the new Block by adding it to the chain
-        previous_hash = blockchain.hash(last_block)
-        block = ablockchain.new_block(proof, previous_hash)
+        previous_hash = trans.hash(last_block)
+        lo_time1 = datetime.datetime.now()
+        today = datetime.datetime.today()
+        u1 = mongo.db.Transaction_block.find().sort([('index', -1)]).limit(1)
+        print(u1)
+        p = 0
+        for i in u1:
+            p = i['index']
+        print(p)
+        if lo_time1.date() == today.date() or p > 1:
+            trans.pre_block(proof, previous_hash, p, values)
+            # Database.insert('Transaction_block', response)
+            # u1 = mongo.db.Transaction_block.find_one().sort('_id', pymongo.DESCENDING).limit(1)
+            '''response = {
+                'node_id': node_identifier,
+                'message': "Added To the Existing Block",
+                'index': u1['index'],
+                'transactions': block['transactions'],
+                'proof': u1['proof'],
+                'previous_hash': u1['previous_hash'],
+            }'''
 
-        response = {
-            'node_id': node_identifier,
-            'message': "New Block Forged",
-            'index': block['index'],
-            'transactions': block['transactions'],
-            'proof': block['proof'],
-            'previous_hash': block['previous_hash'],
-        }
-        Database.insert('Assets_block', response)
+            flash("Added Successfully", category='success')
+        else:
+            p = p + 1
+            block = trans.new_block(proof, p, previous_hash)
+            response = {
+                'node_id': node_identifier,
+                'message': "New Block Forged",
+                'index': block['index'],
+                'transactions': block['transactions'],
+                'proof': block['proof'],
+                'previous_hash': block['previous_hash'],
+            }
+            Database.insert('Transaction_block', block)
+        # Forge the new Block by adding it to the chain
         mongo.save_file(file1.filename, file1)
         flash("Posted Successfully", category='success')
         return make_response(assets(user.username))
