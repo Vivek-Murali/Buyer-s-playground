@@ -7,7 +7,7 @@ bokeh==1.1.0
 branca==0.3.1
 bson==0.5.8
 cairocffi==1.0.2
-CairoSVG==2.3.0
+CairoSVG==2.5.1
 certifi==2019.3.9
 cffi==1.11.5
 chardet==3.0.4
