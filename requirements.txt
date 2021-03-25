@@ -59,7 +59,7 @@ Pyphen==0.9.5
 pyrsistent==0.14.11
 python-dateutil==2.8.0
 pytz==2018.9
-PyYAML==5.1
+PyYAML==5.4
 ratelim==0.1.6
 requests==2.21.0
 retrying==1.3.3
