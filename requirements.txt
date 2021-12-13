@@ -41,7 +41,7 @@ jsonschema==3.0.1
 jupyter-core==4.4.0
 kiwisolver==1.1.0
 lunardate==0.2.0
-lxml==4.3.3
+lxml==4.6.5
 lxml2json==0.2.5
 MarkupSafe==1.1.0
 matplotlib==3.0.3
