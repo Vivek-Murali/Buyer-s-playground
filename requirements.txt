@@ -46,7 +46,7 @@ lxml2json==0.2.5
 MarkupSafe==1.1.0
 matplotlib==3.0.3
 nbformat==4.4.0
-numpy==1.16.2
+numpy==1.22.0
 packaging==19.0
 pandas==0.24.1
 patsy==0.5.1
